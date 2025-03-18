@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaLock,FaChild } from "react-icons/fa";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Checkbox } from "@radix-ui/react-checkbox";
 import { Input } from "../components/ui/input";
 import { Link } from "react-router-dom";
 
@@ -11,17 +10,8 @@ export default function Signup() {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    agree: false,
+    prn : "",
   });
-
-  interface FormState {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    agree: boolean;
-  }
 
   interface ChangeEvent {
     target: {
@@ -34,20 +24,18 @@ export default function Signup() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    alert("Registration successful!");
+    console.log (form);
+    // backend request
+    alert("Signup successful!");
   }
 
   function handleChange (e: ChangeEvent){
-    // const { name, value, type, checked } = e.target;
-    // setForm((prev) => ({
-    //   ...prev,
-    //   [name]: type === "checkbox" ? checked : value,
-    // }));
-  };
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name] : value,
+    }));
+  };  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -62,7 +50,7 @@ export default function Signup() {
                 name="name"
                 placeholder="Your Name"
                 value={form.name}
-                // onChange={handleChange}
+                onChange={handleChange}
                 required
                 className="w-full border-none focus:ring-0"
               />
@@ -74,19 +62,19 @@ export default function Signup() {
                 name="email"
                 placeholder="Your Email"
                 value={form.email}
-                // onChange={handleChange}
+                onChange={handleChange}
                 required
                 className="w-full border-none focus:ring-0"
               />
             </div>
             <div className="flex items-center border rounded px-3 py-2">
-              <FaLock className="text-gray-400 mr-2" />
+              <FaChild className="text-gray-400 mr-2" />
               <Input
                 type="text"
                 name="prn"
-                placeholder="PRN"
-                value={form.password}
-                // onChange={handleChange}
+                placeholder="Your PRN"
+                value={form.prn}
+                onChange={handleChange}
                 required
                 className="w-full border-none focus:ring-0"
               />
@@ -98,7 +86,7 @@ export default function Signup() {
                 name="password"
                 placeholder="Password"
                 value={form.password}
-                // onChange={handleChange}
+                onChange={handleChange}
                 required
                 className="w-full border-none focus:ring-0"
               />

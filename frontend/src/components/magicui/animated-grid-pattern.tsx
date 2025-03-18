@@ -49,15 +49,16 @@ export function AnimatedGridPattern({
     ];
   }
 
-  // Adjust the generateSquares function to return objects with an id, x, and y
+  // Adjust the generateSquares function to return objects with an id, position, and color
   function generateSquares(count: number) {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       pos: getPos(),
+      color: "#1E3A8A", // Assign a random blue shade
     }));
   }
 
-  // Function to update a single square's position
+  // Function to update a single square's position and color
   const updateSquarePosition = (id: number) => {
     setSquares((currentSquares) =>
       currentSquares.map((sq) =>
@@ -65,9 +66,10 @@ export function AnimatedGridPattern({
           ? {
               ...sq,
               pos: getPos(),
+              color: "#1E3A8A", // Change color dynamically
             }
-          : sq,
-      ),
+          : sq
+      )
     );
   };
 
@@ -105,8 +107,8 @@ export function AnimatedGridPattern({
       ref={containerRef}
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-0 h-full w-full fill-gray-500/30 stroke-gray-500/30",
-        className,
+        "pointer-events-none absolute inset-0 h-full w-full fill-blue-500/30 stroke-blue-500/30",
+        className
       )}
       {...props}
     >
@@ -128,8 +130,15 @@ export function AnimatedGridPattern({
       </defs>
       <rect width="100%" height="100%" fill={`url(#${id})`} />
       <svg x={x} y={y} className="overflow-visible">
-        {squares.map(({ pos: [x, y], id }, index) => (
+        {squares.map(({ pos: [x, y], id, color }, index) => (
           <motion.rect
+            key={`${x}-${y}-${id}`}
+            width={width - 1}
+            height={height - 1}
+            x={x * width + 1}
+            y={y * height + 1}
+            fill={color} // Apply the random blue shade
+            strokeWidth="0"
             initial={{ opacity: 0 }}
             animate={{ opacity: maxOpacity }}
             transition={{
@@ -138,14 +147,7 @@ export function AnimatedGridPattern({
               delay: index * 0.1,
               repeatType: "reverse",
             }}
-            onAnimationComplete={() => updateSquarePosition(id)}
-            key={`${x}-${y}-${index}`}
-            width={width - 1}
-            height={height - 1}
-            x={x * width + 1}
-            y={y * height + 1}
-            fill="currentColor"
-            strokeWidth="0"
+            onAnimationComplete={() => updateSquarePosition(id)} // Change position and color after animation
           />
         ))}
       </svg>
