@@ -10,7 +10,7 @@ function Home() {
       <div className="absolute top-0 left-0 right-0 flex justify-between p-8"> 
         <div className=''>Logo</div>
             <button className="bg-gray-700 text-white rounded-sm p-2" >
-              <Link to="/signup">Get started</Link>
+              <Link to="/signup/student">Get started</Link>
             </button>
       </div>
       <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  text-center'>

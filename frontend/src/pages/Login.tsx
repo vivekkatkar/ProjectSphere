@@ -25,7 +25,7 @@ export function Login() {
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="flex justify-center items-center min-h-screen bg-blue-100">
             <Card className="w-full max-w-2xl p-8 flex shadow-lg bg-white rounded-lg">
                 {/* Left Section (Login Form) */}
                 <div className="w-1/2 p-6">
@@ -68,7 +68,7 @@ export function Login() {
                     {/* Signup Link */}
                     <p className="text-sm text-center mt-4">
                         Don't have an account?{' '} 
-                        <Link to="/signup" className="text-blue-600 hover:underline">
+                        <Link to="/signup/student" className="text-blue-600 hover:underline">
                             Sign up
                         </Link>
                     </p>    
