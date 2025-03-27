@@ -3,8 +3,15 @@ import { Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import { Login } from "./pages/Login";
-import StudentSignup from "./pages/studentSignup";
+import StudentSignup from "./pages/Student/StudentSignup";
 import TeacherSignup from "./pages/teacherSignup";
+import Dashboard from "./pages/Student/Dashboard";
+import Profile from "./pages/Student/Profile";
+import Idea from "./pages/Student/Idea";
+import WeeklyReports from "./pages/Student/WeeklyReports";
+import AllProjects from "./pages/Student/AllProjects";
+import Notification from "./pages/Student/Notification";
+import ProjectDetails from "./pages/Student/ProjectDetails";
 
 export default function App() {
   return (
@@ -18,6 +25,14 @@ export default function App() {
         </Route>
         <Route path="/login" element={<Login />} /> 
         {/* adding protected routes */}
+        <Route path="/student-dashboard" element= {<Dashboard/>}>
+            <Route path="profile" element={<Profile/>} />
+            <Route path="idea" element={<Idea/>} />
+            <Route path="weekly-reports" element={<WeeklyReports />} />
+            <Route path="notifications" element={<Notification />} />
+            <Route path="all-projects" element = {<AllProjects/>}/>
+            <Route path="project-details" element = {<ProjectDetails/>}/>
+        </Route>
       </Routes>
     </div>
   );

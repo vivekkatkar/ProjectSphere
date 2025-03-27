@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { FaUser, FaEnvelope, FaLock,FaChild } from "react-icons/fa";
-import { Card } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Link } from "react-router-dom";
+import { Card } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function StudentSignup() {
   const [form, setForm] = useState({
     name: "",
     email: "",
     prn : "",
+    semester : 0,
     password: "",
     confirmPassword : "",
   });
@@ -19,18 +20,38 @@ export default function StudentSignup() {
       name: string;
       value: string;
     };
-  }
+  } 
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const navigate = useNavigate();
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log (form);
-    if (form.password != form.confirmPassword) {
-        alert ("password and confirm password don't match")
-        return  
+    
+    if (form.password !== form.confirmPassword) {
+      alert("Password and confirm password don't match");
+      return;
     }
-    // backend request
-    alert("Signup successful!");
+  
+    const resp = await fetch("http://localhost:3000/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        prn: form.prn,
+        semester: form.semester,
+        password: form.password,
+      }),
+    })
+    const data = await resp.json();
+    console.log (data);  
+    const token = data.token;
+    localStorage.setItem("token", token); 
+    navigate ("/student-dashboard")
   }
+  
 
   function handleChange (e: ChangeEvent){
     const { name, value } = e.target;
@@ -77,6 +98,18 @@ export default function StudentSignup() {
                 name="prn"
                 placeholder="Your PRN"
                 value={form.prn}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaChild className="text-gray-400 mr-2" />
+              <Input
+                type="text"
+                name="semester"
+                placeholder="Semester"
+                value={form.semester}
                 onChange={handleChange}
                 required
                 className="w-full border-none focus:ring-0"
