@@ -3,17 +3,40 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { FaLock, FaUser } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function Login() {
     const [form, setForm] = useState({
         email: '',
         password: '',
+        semester : 0
     });
+    const [error, setError] = useState('');
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const navigate = useNavigate();
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        console.log(form);
+        const resp = await fetch("http://localhost:3000/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: form.email,
+              semester: form.semester,
+              password: form.password,
+            }),
+        })
+        const data = await resp.json();
+        console.log (data);  
+        if (data.message == "fail") {
+            setError (data.error);
+            return ;
+        }
+        const token = data.token;
+        localStorage.setItem("token", token);  
+        navigate ("/student-dashboard")
     }
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -25,9 +48,11 @@ export function Login() {
     }
 
     return (
+        
         <div className="flex justify-center items-center min-h-screen bg-blue-100">
             <Card className="w-full max-w-2xl p-8 flex shadow-lg bg-white rounded-lg">
                 {/* Left Section (Login Form) */}
+                <div>{error != "" ? error : ""}</div>
                 <div className="w-1/2 p-6">
                     <h2 className="text-2xl font-bold mb-4">Login</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,6 +83,20 @@ export function Login() {
                                 className="w-full border-none focus:ring-0"
                             />
                         </div>
+
+                        <div className="flex items-center border rounded px-3 py-2">
+                            <FaLock className="text-gray-400 mr-2" />
+                            <Input
+                                type="text"
+                                name="semester"
+                                placeholder="Semester"
+                                value={form.semester}
+                                onChange={handleChange}
+                                required
+                                className="w-full border-none focus:ring-0"
+                            />  
+                        </div>
+
 
                         {/* Login Button */}
                         <Button type='submit' className="hover:bg-blue-600 w-full bg-blue-500 text-white rounded-lg py-2">

@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Link } from "react-router-dom";
 
-export default function StudentSignup() {
+export default function TeacherSignup() {
   const [form, setForm] = useState({
     name: "",
     email: "",
