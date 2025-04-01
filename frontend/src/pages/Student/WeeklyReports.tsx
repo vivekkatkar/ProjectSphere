@@ -5,12 +5,12 @@ export default function WeeklyReports() {
     const [reports, setReports] = useState ([{
       "status" : false,
       "week" : 1,
-      "img" : null
+      "img" : null,
     }, {
       "status" : true,
       "week" : 2,
       "img" : null
-    } ]);
+    }]);
 
     const [file, setFile] = useState<File | null>(null);
 

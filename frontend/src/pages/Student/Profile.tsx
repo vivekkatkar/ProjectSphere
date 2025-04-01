@@ -75,14 +75,9 @@ const Profile = () => {
         }
     }
 
-
-
     useEffect(() => {
         getDetails();
     }, []);
-
-    
-
 
     function directToProjectDetails({ index } : any) {
         const info = { semester: prevProjects[index].Semester, prn : student.teamId };

@@ -27,13 +27,20 @@ model guide {
 model project {
   id               Int    @id @default(autoincrement())
   teamId           Int?
-  idea             String
-  ideaApproval     Int    @default(0)
+  topic             String    
   synopsis         Bytes
   synopsisApproval Int    @default(0)
   githubLink       String
 
   @@index([teamId], map: "Project_teamId_fkey")
+}
+
+model Idea {
+  id     Int  @id @default(autoincrement())
+  teamId Int
+  topic String
+  comment String
+  approved Boolean
 }
 
 model report {
@@ -52,23 +59,19 @@ model student {
   name     String
   prn      String @unique(map: "Student_prn_key")
   teamId   Int?
-  guideId  Int?
   semester Int    @default(0)
   batchId Int? 
 
-  @@index([guideId], map: "Student_guideId_fkey")
   @@index([teamId], map: "Student_teamId_fkey")
   @@index([batchId], map : "Team_batchId_fkey")
 }
+
 model team {
   id       Int    @default(autoincrement())
-  prn      String
   semester Int
   name     String
-  batchId  Int?
   guideId  Int?
 
-  @@id([id, prn])
-  @@index([batchId], map: "Team_batchId_fkey")
+  @@id([id, semester])
   @@index([guideId], map: "Team_guideId_fkey")
 }

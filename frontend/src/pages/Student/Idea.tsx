@@ -6,7 +6,7 @@ const Idea = () => {
         "status" : 0  // 0 -> pending, 1 -> approved, 2 -> rejected
     });
     
-    const [ideaStatus, setIdeaStatus] = useState("approved"); // pending | approved | rejected
+    const [ideaStatus, setIdeaStatus] = useState("rejected"); // pending | approved | rejected
     const [synopsis, setSynopsis] = useState({
         "file" : null, 
         "status" : 0 // 0 -> pending, 1 -> approved, 2 -> rejected

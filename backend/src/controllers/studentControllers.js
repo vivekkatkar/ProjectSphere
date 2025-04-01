@@ -34,65 +34,57 @@ exports.profile = async (req, res) => {
 
 	res.json({"message" : "hey ya from server"})
 };
-
 exports.getAll = async (req, res) => {
 	try{
 		const semester = req.user.semester;
 		console.log ("semester is :(" ,semester);
 		const data = await prisma.student.findMany({
-			where : {semester}
+			where : {
+				semester : semester,
+				teamId : null
+			},
+			select : {
+				id : true,
+				name : true,
+				prn : true	
+			}
 		});
 		console.log (data);
 		return res.json ({message : "success", data})
 	}
 	catch(error){
+		console.log(error);
 		res.json ({message : "fail", error});
 	}
-
 }
- 
-async function addOtherMembers (team, teamId, semester){
-	let id = teamId
-	for (let i = 2; i < team.length; i++){
-		let name = team[i].name, prn = team[i].prn
-		await prisma.team.create ({ data : {semester ,name, prn, id}});
-	} 
-} 
-
-
-// model team {
-// 	id       Int    @id @default(autoincrement())
-// 	prn      String
-// 	semester Int
-// 	name     String
-// 	batchId  Int?
-// 	guideId  Int?
+async function addTeamIDForOtherMembers(team, teamId, semester) {
+	const id = teamId;
+	for (let i = 1; i < team.length; i++) {
+	  await prisma.student.update({
+		where: { semester: semester, prn: team[i].label },
+		data: { teamId: id },
+	  });
+	}
+  }
   
-// 	@@index([batchId], map: "Team_batchId_fkey")
-// 	@@index([guideId], map: "Team_guideId_fkey")
-//  }
+  exports.createTeam = async (req, res) => {
+	try {
+	  const data = req.body.team;
+	  const name = req.body.teamName;
+	  let semester = req.user.semester;
+  
+	  console.log (data);
 
-exports.createTeam = async (req, res) => {
-	try{
-		const data = req.body;
-		let semester = req.user.semester, name = data.team[1].name, prn = data.team[1].prn;
-		console.log (semester, name, prn);
-		// await prisma.student.create({
-        //     data: { name, email, password: hashedPassword, prn, semester },
-        // });
-		const user = await prisma.team.create ({data : {semester, name, prn }})
-		const teamId = user.id;
-
-		console.log (user);
-
-		// return res.json ("ok");
-
-		await addOtherMembers (data.team, teamId, semester);
-
-		res.json ({"message" : "success"});	
+	  const user = await prisma.team.create({ data: { semester, name } });
+	  const teamId = user.id;
+  
+	  await addTeamIDForOtherMembers(data, teamId, semester); //data is array of students
+  
+	  return res.status(201).json({
+		status: "success",
+		message: "Team created successfully",
+	  });
+	} catch (e) {
+	  console.log(e);
 	}
-	catch (e){
-		console.log (e);
-	}
-
-}
+  };
