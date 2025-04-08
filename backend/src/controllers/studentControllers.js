@@ -10,7 +10,7 @@ router.get ("/notification", )
 
 exports.profile = async (req, res) => {
 	const {semester, email} = req.user;
-	console.log (semester, email);
+	// console.log (semester, email);
 	try{
 		const user = await prisma.student.findUnique({
 			where: {
@@ -37,7 +37,7 @@ exports.profile = async (req, res) => {
 exports.getAll = async (req, res) => {
 	try{
 		const semester = req.user.semester;
-		console.log ("semester is :(" ,semester);
+		// console.log ("semester is :(" ,semester);
 		const data = await prisma.student.findMany({
 			where : {
 				semester : semester,
@@ -49,17 +49,18 @@ exports.getAll = async (req, res) => {
 				prn : true	
 			}
 		});
-		console.log (data);
+		// console.log (data);
 		return res.json ({message : "success", data})
 	}
 	catch(error){
-		console.log(error);
+		// console.log(error);
 		res.json ({message : "fail", error});
 	}
 }
+
 async function addTeamIDForOtherMembers(team, teamId, semester) {
 	const id = teamId;
-	for (let i = 1; i < team.length; i++) {
+	for (let i = 0; i < team.length; i++) {
 	  await prisma.student.update({
 		where: { semester: semester, prn: team[i].label },
 		data: { teamId: id },
@@ -73,11 +74,11 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	  const name = req.body.teamName;
 	  let semester = req.user.semester;
   
-	  console.log (data);
+	//   console.log (`create team \n : ${data}` );
 
 	  const user = await prisma.team.create({ data: { semester, name } });
 	  const teamId = user.id;
-  
+		console.log (`teamId is ${teamId}`);
 	  await addTeamIDForOtherMembers(data, teamId, semester); //data is array of students
   
 	  return res.status(201).json({
@@ -88,3 +89,26 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	  console.log(e);
 	}
   };
+
+
+  // team details 
+
+  exports.getTeamDetails = async (req, res) => {
+	// join => team and student teamId on id => return name and prn
+	const teamId = req.params.id;
+	const {semester, email} = req.user;
+	// console.log (semester, email);
+	// const projects = await prisma.project.findMany({
+	// 	include: {
+	// 	  student: true,
+	// 	},
+	//   });
+	
+	const teams = await prisma.student.findMany({
+		where : {
+			semester : semester,
+			teamId : teamId
+		}
+	});
+	console.log (`team details : ${JSON.stringify(teams, null, 2)}`);
+  }

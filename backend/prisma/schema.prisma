@@ -8,39 +8,49 @@ datasource db {
 }
 
 model batch {
-  id       Int    @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   name     String
   semester Int
   guideId  Int?
+
+  guide    guide?   @relation(fields: [guideId], references: [id])
+  students student[]
 
   @@index([guideId], map: "Batch_guideId_fkey")
 }
 
 model guide {
-  id       Int    @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   name     String
   role     String
-  email    String @unique(map: "Guide_email_key")
+  email    String   @unique(map: "Guide_email_key")
   semester Int
+
+  teams    team[]
+  batches  batch[]
 }
 
 model project {
   id               Int    @id @default(autoincrement())
   teamId           Int?
-  topic             String    
+  topic            String    
   synopsis         Bytes
   synopsisApproval Int    @default(0)
   githubLink       String
+
+  team             team?  @relation(fields: [teamId], references: [id])
 
   @@index([teamId], map: "Project_teamId_fkey")
 }
 
 model Idea {
-  id     Int  @id @default(autoincrement())
-  teamId Int
-  topic String
-  comment String
-  approved Boolean
+  id       Int    @id @default(autoincrement())
+  teamId   Int
+  topic    String
+  comment  String
+  approved Int // 0 -> pending, 1 -> approved, 2 -> rejected
+
+  team     team  @relation(fields: [teamId], references: [id])
 }
 
 model report {
@@ -49,21 +59,26 @@ model report {
   file      Bytes
   createdAt DateTime @default(now())
 
+  team      team?    @relation(fields: [teamId], references: [id])
+
   @@index([teamId], map: "Report_teamId_fkey")
 }
 
 model student {
-  id       Int    @id @default(autoincrement())
-  email    String @unique(map: "Student_email_key")
+  id       Int     @id @default(autoincrement())
+  email    String  @unique(map: "Student_email_key")
   password String
   name     String
-  prn      String @unique(map: "Student_prn_key")
+  prn      String  @unique(map: "Student_prn_key")
   teamId   Int?
-  semester Int    @default(0)
-  batchId Int? 
+  semester Int     @default(0)
+  batchId  Int?
+
+  team     team?   @relation(fields: [teamId], references: [id])
+  batch    batch?  @relation(fields: [batchId], references: [id])
 
   @@index([teamId], map: "Student_teamId_fkey")
-  @@index([batchId], map : "Team_batchId_fkey")
+  @@index([batchId], map: "Team_batchId_fkey")
 }
 
 model team {
@@ -72,6 +87,13 @@ model team {
   name     String
   guideId  Int?
 
+  guide    guide?    @relation(fields: [guideId], references: [id])
+  students student[]
+  projects project[]
+  reports  report[]
+  ideas    Idea[]
+
   @@id([id, semester])
+  @@unique([id], map: "Team_id_unique")
   @@index([guideId], map: "Team_guideId_fkey")
 }
