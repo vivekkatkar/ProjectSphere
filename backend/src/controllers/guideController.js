@@ -117,10 +117,10 @@ exports.updateIdeaStatus = async (req, res) => {
 
   const allowedStatuses = ["true", "false"];
 
-  if (!allowedStatuses.includes(status)) {
+  if (typeof accepted !== "boolean") {
     return res.status(400).json({
       status: "failed",
-      message: "Invalid status value",
+      message: "Invalid 'accepted' value, must be true or false",
     });
   }
 
@@ -150,7 +150,7 @@ exports.updateIdeaStatus = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      data: "updatedIdea",
+      data: updatedIdea,
     });
   } catch (e) {
     return res.status(500).json({
@@ -193,7 +193,7 @@ exports.getReports = async (req, res) => {
 // router.get("/teams/:id/synopsis", authenticateToken, getSynopsis);
 
 exports.getSynopsis = async (req, res) => {
-  const teamId = req.params.id;
+  const teamId = parseInt(req.params.id);
   try {
     const project = await prisma.project.findUnique({
       where: {
@@ -201,7 +201,7 @@ exports.getSynopsis = async (req, res) => {
       },
     });
 
-    if (!project.synopsis) {
+    if (!project || !project.synopsis) {
       return res.status(200).json({
         status: "success",
         message: "No synopsis uploaded",
@@ -256,16 +256,14 @@ exports.updateSynopsisStatus = async (req, res) => {
     });
 
     return res.status(200).json({
-        status: "success",
-        data: updatedProject,
-    })
-
+      status: "success",
+      data: updatedProject,
+    });
   } catch (e) {
     return res.status(500).json({
-        status: "failed",
-        error: e.message,
-      });
+      status: "failed",
+      error: e.message,
+    });
   }
 };
-
 

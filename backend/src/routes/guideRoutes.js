@@ -16,7 +16,7 @@ router.get("/teams/:id/ideas", authenticateToken, getIdeas);
 router.post("/teams/:id/idea/:ideaId/status", authenticateToken, updateIdeaStatus); 
 
 router.get("/teams/:id/reports", authenticateToken, getReports);    
-// router.post("/teams/:id/report/status", authenticateToken, updateReportStatus); 
+// router.post("/teams/:id/report/status", authenticateToken, updateReportStatus);
 
 router.get("/teams/:id/synopsis", authenticateToken, getSynopsis);
 router.post("/teams/:id/synopsis/status", authenticateToken, updateSynopsisStatus);

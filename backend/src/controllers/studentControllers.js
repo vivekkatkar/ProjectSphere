@@ -3,10 +3,10 @@ require("dotenv").config();
 const express = require ("express")
 const router = express.Router();
 
-router.get("/profile", );
-router.get("/idea", );
-router.get ("/weeklyReport", )
-router.get ("/notification", )
+// router.get("/profile", );
+// router.get("/idea", );
+// router.get ("/weeklyReport", )
+// router.get ("/notification", )
 
 exports.profile = async (req, res) => {
 	const {semester, email} = req.user;
@@ -88,3 +88,15 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	  console.log(e);
 	}
   };
+
+//   router.get ("/weeklyReport", authenticateToken, getAllReports);
+
+exports.getAllReports = async (req, res) => {
+	try {
+		
+	} catch (e) {
+
+	}
+}
+
+//   router.post ("/weeklyReport/upload", authenticateToken, uploadReport);
