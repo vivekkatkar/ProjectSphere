@@ -75,3 +75,4 @@ model team {
   @@id([id, semester])
   @@index([guideId], map: "Team_guideId_fkey")
 }
+
