@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String               @id @default(uuid()) @db.Uuid
+  name            String               @db.VarChar(100)
+  email           String               @db.VarChar(255)
+  whatsappNumber  String?              @db.VarChar(15)
+  createdAt       DateTime             @default(now())
+  preferences     UserPreference[]
+  notifications   Notification[]
+}
+
+model NotificationChannel {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(50)
+  preferences UserPreference[]
+}
+
+model UserPreference {
+  userId     String                @db.Uuid
+  channelId  Int
+  isEnabled  Boolean              @default(true)
+
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel    NotificationChannel  @relation(fields: [channelId], references: [id])
+
+  @@id([userId, channelId])
+}
+
+model NotificationEvent {
+  id            String       @id @default(uuid()) @db.Uuid
+  eventName     String       @db.VarChar(100)
+  triggerSource String       @db.VarChar(50)
+  metadata      Json
+  createdAt     DateTime     @default(now())
+  notifications Notification[]
+}
+
+model Notification {
+  id         String           @id @default(uuid()) @db.Uuid
+  userId     String           @db.Uuid
+  eventId    String           @db.Uuid
+  message    String
+  channel    String           @db.VarChar(50)
+  isRead     Boolean          @default(false)
+  status     String           @db.VarChar(20)
+  sentAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  user       User             @relation(fields: [userId], references: [id])
+  event      NotificationEvent @relation(fields: [eventId], references: [id])
+}

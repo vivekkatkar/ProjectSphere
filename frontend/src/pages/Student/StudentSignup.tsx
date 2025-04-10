@@ -52,7 +52,6 @@ export default function StudentSignup() {
     navigate ("/student-dashboard")
   }
   
-
   function handleChange (e: ChangeEvent){
     const { name, value } = e.target;
     setForm((prev) => ({
