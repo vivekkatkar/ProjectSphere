@@ -54,7 +54,7 @@ const Profile = () => {
                 return resp.json();
             })
             .then(data => {
-                // console.log (data);
+                console.log (data);
                 setStudent(() => {
                     console.log (data.data);
                     const updatedStudent = {
