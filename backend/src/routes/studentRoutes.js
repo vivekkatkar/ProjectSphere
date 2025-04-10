@@ -11,11 +11,12 @@ router.get ("/getAll", authenticateToken, getAll);
 // team
 router.post ("/createTeam", authenticateToken, createTeam);
 router.get ("/team/:id", authenticateToken, getTeamDetails);
-
-router.get("/idea", authenticateToken);
-router.get ("/weeklyReport", authenticateToken);
-router.get ("/notification", authenticateToken);
 router.post ('/addIdea', authenticateToken);
 router.get ('post', authenticateToken);
+
+router.get("/idea", authenticateToken, getAllIdeas);
+router.get ("/weeklyReport", authenticateToken, getAllReports);
+router.post ("/weeklyReport/upload", authenticateToken, uploadReport);
+router.get ("/notification", authenticateToken, getNotifications);
 
 module.exports = router;

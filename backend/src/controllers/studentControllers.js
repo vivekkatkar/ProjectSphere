@@ -3,14 +3,17 @@ require("dotenv").config();
 const express = require ("express")
 const router = express.Router();
 
-router.get("/profile", );
-router.get("/idea", );
-router.get ("/weeklyReport", )
-router.get ("/notification", )
+// router.get("/profile", );
+// router.get("/idea", );
+// router.get ("/weeklyReport", )
+// router.get ("/notification", )
 
 exports.profile = async (req, res) => {
-	const {semester, email} = req.user;
-	// console.log (semester, email);
+
+	let {semester, email} = req.user;
+	semester =  parseInt(semester);
+	console.log (semester, email);
+
 	try{
 		const user = await prisma.student.findUnique({
 			where: {
@@ -36,8 +39,9 @@ exports.profile = async (req, res) => {
 };
 exports.getAll = async (req, res) => {
 	try{
-		const semester = req.user.semester;
-		// console.log ("semester is :(" ,semester);
+		const semester = parseInt(req.user.semester);
+		console.log ("semester is :(" ,semester);
+
 		const data = await prisma.student.findMany({
 			where : {
 				semester : semester,
@@ -112,3 +116,15 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	});
 	console.log (`team details : ${JSON.stringify(teams, null, 2)}`);
   }
+
+//   router.get ("/weeklyReport", authenticateToken, getAllReports);
+
+exports.getAllReports = async (req, res) => {
+	try {
+		
+	} catch (e) {
+
+	}
+}
+
+//   router.post ("/weeklyReport/upload", authenticateToken, uploadReport);

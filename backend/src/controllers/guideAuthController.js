@@ -5,13 +5,20 @@ require("dotenv").config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
-exports.signup = async (req, res) => {
-  let { name, email, password, prn, semester } = req.body;
-  console.log(name, email, password, prn, semester);
-  semester = parseInt(semester);
+// model guide {
+//     id       Int    @id @default(autoincrement())
+//     name     String
+//     password String
+//     role     String
+//     email    String @unique(map: "Guide_email_key")
+//     semester Int
+//   }
 
+exports.signup = async (req, res) => {
+  let { name, email, password, role } = req.body;
+  
   try {
-    console.log(name, email, password, prn, semester);
+    console.log(name, email, password, role);
     const existingUser = await prisma.student.findFirst({ where: { email } });
     console.log(existingUser);
     if (existingUser)
@@ -19,11 +26,11 @@ exports.signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
-    await prisma.student.create({
-      data: { name, email, password: hashedPassword, prn, semester },
+    await prisma.guide.create({
+      data: { name, email, password: hashedPassword, role },
     });
 
-    const token = jwt.sign({ semester: semester, email: email }, SECRET_KEY);
+    const token = jwt.sign({ role: role, email: email }, SECRET_KEY);
 
     res.json({ message: "registered successful", token });
   } catch (error) {
@@ -32,19 +39,9 @@ exports.signup = async (req, res) => {
   }
 };
 
-// model Student {
-//     id         Int      @id @default(autoincrement())
-//     email   String   @unique
-//     password   String
-//     name  String
-//     prn   Int           @unique
-//     teamId Int    @default(0)
-//     guideId Int   @default(0)
-//     semester Int  @default(0)
-//   }
 
 exports.login = async (req, res) => {
-  const { email, password, semester } = req.body;
+  const { email, password, role } = req.body;
 
   try {
     const user = await prisma.student.findUnique({ where: { email } });
@@ -59,18 +56,11 @@ exports.login = async (req, res) => {
         .status(401)
         .json({ message: "fail", error: "Invalid email or password" });
 
-    if (user.semester != semester) {
-      await prisma.student.update({
-        where: { email },
-        data: { semester },
-      });
-    }
-
     const token = jwt.sign(
-      { semester: user.semester, email: user.email },
+      { role: user.role, email: user.email },
       SECRET_KEY
     );
-    res.json({ message: "success", token, semester, email });
+    res.json({ message: "success", token, role, email });
   } catch (error) {
     res.status(500).json({ message: "fail", error: error.message });
   }
