@@ -9,7 +9,8 @@ const router = express.Router();
 // router.get ("/notification", )
 
 exports.profile = async (req, res) => {
-	const {semester, email} = req.user;
+	let {semester, email} = req.user;
+	semester =  parseInt(semester);
 	console.log (semester, email);
 	try{
 		const user = await prisma.student.findUnique({
@@ -36,7 +37,7 @@ exports.profile = async (req, res) => {
 };
 exports.getAll = async (req, res) => {
 	try{
-		const semester = req.user.semester;
+		const semester = parseInt(req.user.semester);
 		console.log ("semester is :(" ,semester);
 		const data = await prisma.student.findMany({
 			where : {

@@ -17,7 +17,7 @@ export function Login() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const resp = await fetch("http://localhost:3000/auth/login", {
+        const resp = await fetch("http://localhost:3000/student-auth/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

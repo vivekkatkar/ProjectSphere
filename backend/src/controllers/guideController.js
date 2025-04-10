@@ -26,7 +26,24 @@ exports.profile = async (req, res) => {
 };
 
 exports.getAllTeams = async (req, res) => {
+  // student data -> name and prn
+
   try {
+    const getTeamDetails = async (teamId) => {
+      const students = await prisma.student.findMany({
+        where: {
+          teamId: teamId,
+        },
+        select: {
+          teamId: true,
+          name: true,
+          prn: true,
+        },
+      });
+
+      return students;
+    };
+
     const teams = await prisma.team.findMany({
       where: {
         guideId: req.user.id,
@@ -40,8 +57,15 @@ exports.getAllTeams = async (req, res) => {
       });
     }
 
-    return res.status(200).json({ status: "Success", data: teams });
+    const teamDetails = await Promise.all(
+      teams.map((team) => getTeamDetails(team.id))
+    );
+
+    return res
+      .status(200)
+      .json({ status: "Success", data: teams, teamDetails: teamDetails });
   } catch (e) {
+    console.log(e);
     return res.status(500).json({
       status: "failed",
       error: e.message,
@@ -110,7 +134,7 @@ exports.getIdeas = async (req, res) => {
 
 // router.post("/teams/:id/idea/:ideaId/status", authenticateToken, updateIdeaStatus);
 
-exports.updateIdeaStatus = async (req, res) => {
+exports.updateIdeaStatus = async (req, res) => { // string -> datatype of idea allowed
   const teamId = parseInt(req.params.teamId);
   const ideaId = parseInt(req.params.ideaId);
   const { accepted, comment } = req.body;
@@ -266,4 +290,3 @@ exports.updateSynopsisStatus = async (req, res) => {
     });
   }
 };
-

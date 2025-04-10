@@ -19,6 +19,8 @@ model batch {
 model guide {
   id       Int    @id @default(autoincrement())
   name     String
+  password String
+  phone    String
   role     String
   email    String @unique(map: "Guide_email_key")
   semester Int
@@ -58,6 +60,7 @@ model student {
   password String
   name     String
   prn      String @unique(map: "Student_prn_key")
+  phone    String
   teamId   Int?
   semester Int    @default(0)
   batchId Int? 
