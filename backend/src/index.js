@@ -24,6 +24,15 @@ app.use("/student", studentRoutes);
 
 app.use("/guide" ,guideRouter);
 
+app.get("/", (req, res)=>{
+    res.send("Hello world");
+});
+
+
+app.get("/test", (req, res)=>{
+    res.send("Hello world");
+});
+
 // Start server
 const PORT = 3000;
 app.listen(PORT, () => {

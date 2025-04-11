@@ -3,14 +3,17 @@ import { FaUser, FaEnvelope, FaLock,FaChild, FaCriticalRole, FaGenderless } from
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function TeacherSignup() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
     role : "",
     password : "",
+    semester : "",
+    phone : "",
     confirmPassword : ""
   });
 
@@ -21,16 +24,48 @@ export default function TeacherSignup() {
     };
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log (form);
-    if (form.password != form.confirmPassword) {
-        alert ("password and confirm password don't match")
-        return
+    
+    if (form.password !== form.confirmPassword) {
+      alert("Password and confirm password don't match");
+      return;
     }
-    // backend request
-    alert("Signup successful!");
+  
+    const resp = await fetch("http://localhost:3000/guide-auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        semester: form.semester,
+        role: form.role,
+        phone: form.phone,
+        password: form.password,
+      }),
+    })
+    const data = await resp.json();
+    console.log (data);  
+    const token = data.token;
+    console.log(token);
+    localStorage.setItem("token", token); 
+    // window.open("http://localhost:9563/");
+    window.open(`http://localhost:9563/?token=${token}`);
+
   }
+
+  // function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  //   e.preventDefault();
+  //   console.log (form);
+  //   if (form.password != form.confirmPassword) {
+  //       alert ("password and confirm password don't match")
+  //       return
+  //   }
+  //   // backend request
+  //   alert("Signup successful!");
+  // }
 
   function handleChange (e: ChangeEvent){
     const { name, value } = e.target;
@@ -70,6 +105,33 @@ export default function TeacherSignup() {
                 className="w-full border-none focus:ring-0"
               />
             </div>
+
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <Input
+                type="text"
+                name="phone"
+                placeholder="Your Phone"
+                value={form.phone}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <Input
+                type="text"
+                name="semester"
+                placeholder="Your Semester"
+                value={form.semester}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+
             <div className="flex items-center border rounded px-3 py-2">
               <FaUser className="text-gray-400 mr-2" />
               <select 
@@ -114,7 +176,7 @@ export default function TeacherSignup() {
           </form>
           <p className="mt-4 text-center">
             Already have an account?
-             <Link to="/login" className="text-blue-600 hover:underline"> Login</Link>
+             <Link to="/login?user=teacher" className="text-blue-600 hover:underline"> Login</Link>
           </p>
         </div>
         <div className="w-1/2 hidden md:flex justify-center items-center">

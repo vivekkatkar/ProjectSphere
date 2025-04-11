@@ -55,6 +55,7 @@ const Profile = () => {
             })
             .then(data => {
                 console.log (data);
+                localStorage.setItem("teamId", data.data.teamId || 0);
                 setStudent(() => {
                     console.log (data.data);
                     const updatedStudent = {

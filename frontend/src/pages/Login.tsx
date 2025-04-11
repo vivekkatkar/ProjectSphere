@@ -3,9 +3,17 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { FaLock, FaUser } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
 
 export function Login() {
+    const query = useQuery();
+    const user = query.get("user");
+    console.log(user);
+
     const [form, setForm] = useState({
         email: '',
         password: '',
@@ -17,26 +25,54 @@ export function Login() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const resp = await fetch("http://localhost:3000/student-auth/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: form.email,
-              semester: form.semester,
-              password: form.password,
-            }),
-        })
-        const data = await resp.json();
-        console.log (data);  
-        if (data.message == "fail") {
-            setError (data.error);
-            return ;
+        
+        if(user == "student"){
+            console.log("Student auth");
+            const resp = await fetch("http://localhost:3000/student-auth/login", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: form.email,
+                  semester: form.semester,
+                  password: form.password,
+                }),
+            })
+            const data = await resp.json();
+            console.log (data);  
+            if (data.message == "fail") {
+                setError (data.error);
+                return ;
+            }
+            const token = data.token;
+            localStorage.setItem("token", token);  
+            navigate ("/student-dashboard")
+        }else{
+            console.log("guide auth");
+            const resp = await fetch("http://localhost:3000/guide-auth/login", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: form.email,
+                  semester: form.semester,
+                  password: form.password,
+                }),
+            })
+            const data = await resp.json();
+            console.log (data);  
+            if (data.message == "fail") {
+                setError (data.error);
+                return ;
+            }
+            const token = data.token;
+            localStorage.setItem("token", token);  
+            // navigate ("/student-dashboard")
+            window.open(`http://localhost:9563/?token=${token}`);
         }
-        const token = data.token;
-        localStorage.setItem("token", token);  
-        navigate ("/student-dashboard")
+
     }
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {

@@ -12,6 +12,7 @@ export default function StudentSignup() {
     prn : "",
     semester : 0,
     password: "",
+    phone : "",
     confirmPassword : "",
   });
 
@@ -32,7 +33,7 @@ export default function StudentSignup() {
       return;
     }
   
-    const resp = await fetch("http://localhost:3000/auth/signup", {
+    const resp = await fetch("http://localhost:3000/student-auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,6 +44,7 @@ export default function StudentSignup() {
         prn: form.prn,
         semester: form.semester,
         password: form.password,
+        phone: form.phone,
       }),
     })
     const data = await resp.json();
@@ -102,6 +104,20 @@ export default function StudentSignup() {
                 className="w-full border-none focus:ring-0"
               />
             </div>
+
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaChild className="text-gray-400 mr-2" />
+              <Input
+                type="text"
+                name="phone"
+                placeholder="Your phone no"
+                value={form.phone}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+
             <div className="flex items-center border rounded px-3 py-2">
               <FaChild className="text-gray-400 mr-2" />
               <Input
@@ -144,7 +160,7 @@ export default function StudentSignup() {
           </form>
           <p className="mt-4 text-center">
             Already have an account?
-             <Link to="/login" className="text-blue-600 hover:underline"> Login</Link>
+             <Link to="/login?user=student" className="text-blue-600 hover:underline"> Login</Link>
           </p>
         </div>
         <div className="w-1/2 hidden md:flex justify-center items-center">

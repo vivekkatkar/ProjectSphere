@@ -100,3 +100,27 @@ model team {
   @@unique([id], map: "Team_id_unique")
   @@index([guideId], map: "Team_guideId_fkey")
 }
+
+model Notification {
+  id        Int      @id @default(autoincrement()) 
+  teamId    Int      
+  from      Int      
+  message   String
+  channel   String
+  isRead    Boolean  @default(false) 
+  status    String 
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+  
+  // If you want to create relations, you could uncomment and adjust these:
+  // team      team     @relation(fields: [teamId], references: [id])
+  // guide     guide    @relation(fields: [from], references: [id])
+}
+
+model UserPreference {
+  userId    String  
+  channel   String
+  isEnabled Boolean  @default(true)
+  
+  @@id([userId, channel]) 
+}

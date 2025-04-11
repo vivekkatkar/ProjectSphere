@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   return (
     <div className="rounded-tr-3xl sticky top-0 bg-white shadow-lg p-6 flex flex-col justify-between">
       <div>
@@ -23,7 +24,10 @@ export default function Sidebar() {
           </li>
         </ul>
       </div>
-      <button className="p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+      <button onClick={()=>{
+          localStorage.removeItem("token");
+          navigate("/");
+      }} className="p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">
         Logout
       </button>
     </div>

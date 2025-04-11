@@ -6,12 +6,12 @@ require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
 
 exports.signup = async (req, res) => {
-  let { name, email, password, prn, semester } = req.body;
-  console.log(name, email, password, prn, semester);
+  let { name, email, password, prn, semester, phone } = req.body;
+  console.log(name, email, password, prn, semester, phone);
   semester = parseInt(semester);
 
   try {
-    console.log(name, email, password, prn, semester);
+    console.log(name, email, password, prn, semester, phone);
     const existingUser = await prisma.student.findFirst({ where: { email } });
     console.log(existingUser);
     if (existingUser)
@@ -20,7 +20,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
     await prisma.student.create({
-      data: { name, email, password: hashedPassword, prn, semester },
+      data: { name, email, password: hashedPassword, prn, semester, phone },
     });
 
     const token = jwt.sign({ semester: semester, email: email }, SECRET_KEY);
@@ -72,6 +72,7 @@ exports.login = async (req, res) => {
     );
     res.json({ message: "success", token, semester, email });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "fail", error: error.message });
   }
 };

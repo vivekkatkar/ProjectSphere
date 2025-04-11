@@ -9,7 +9,7 @@ const router = express.Router();
 // router.get ("/notification", )
 
 exports.profile = async (req, res) => {
-
+		console.log(req.user);
 	let {semester, email} = req.user;
 	semester =  parseInt(semester);
 	console.log (semester, email);
@@ -77,7 +77,7 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	  const data = req.body.team;
 	  const name = req.body.teamName;
 	  let semester = req.user.semester;
-  
+		
 	//   console.log (`create team \n : ${data}` );
 
 	  const user = await prisma.team.create({ data: { semester, name } });

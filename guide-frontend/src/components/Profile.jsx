@@ -5,9 +5,17 @@ import axios from "axios";
 export default function Profile() {
     const [data, setData] = useState();
     useEffect(()=>{
+        const token = localStorage.getItem("token");
         async function getData() {
             try {
-                const res = await axios.get("http://10.40.5.29:3000/guide/profile");
+                // const res = await axios.get("http://localhost:3000/guide/profile");
+                const res = await axios.get("http://localhost:3000/guide/profile", {
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${token}`
+                    }
+                  });
+                  
                 setData(res.data.data);
                 // console.log(res.data.data);
                 // console.log(res.data.data);

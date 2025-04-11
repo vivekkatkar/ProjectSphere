@@ -8,9 +8,19 @@ export default function Teams() {
   const [teamDetails, setTeamDetails] = useState([]);
 
   useEffect(() => {
+    
+    const token = localStorage.getItem("token");
     async function getData() {
       try {
-        const res = await axios.get("http://10.40.5.29:3000/guide/teams");
+        // const res = await axios.get("http://localhost:3000/guide/teams");
+        
+        const res = await axios.get("http://localhost:3000/guide/teams", {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });        
+
         setTeams(res.data.data);
         setTeamDetails(res.data.teamDetails);
       } catch (err) {
@@ -24,7 +34,7 @@ export default function Teams() {
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
-        {teams.length === 0 ? (
+        {teams == null || teams.length === 0 ? (
           <div>Loading...</div>
         ) : (
           teams.map((team, index) => (

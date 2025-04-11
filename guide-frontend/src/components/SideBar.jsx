@@ -15,5 +15,10 @@ export default function SideBar(){
         }} >
             Teams Page 
         </div>
+        <div onClick={() => {
+            navigate("/teacher/notify")
+        }} >
+            Notifications 
+        </div>
     </div>
 }

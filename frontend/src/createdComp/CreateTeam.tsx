@@ -13,7 +13,7 @@ export default function CreateTeam() {
 
     useEffect (() => {
         getAllStudents();
-    }, [])
+    }, []);
 
     async function getAllStudents() {
         console.log ("All student data");

@@ -15,10 +15,11 @@ const SECRET_KEY = process.env.JWT_SECRET;
 //   }
 
 exports.signup = async (req, res) => {
-  let { name, email, password, role } = req.body;
-  
+  let { name, email, password, role, phone, semester } = req.body;
+  semester = parseInt(semester);
+
   try {
-    console.log(name, email, password, role);
+    console.log(name, email, password, role, phone, semester);
     const existingUser = await prisma.student.findFirst({ where: { email } });
     console.log(existingUser);
     if (existingUser)
@@ -27,7 +28,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
     await prisma.guide.create({
-      data: { name, email, password: hashedPassword, role },
+      data: { name, email, password: hashedPassword, role, phone, semester },
     });
 
     const token = jwt.sign({ role: role, email: email }, SECRET_KEY);
@@ -41,10 +42,13 @@ exports.signup = async (req, res) => {
 
 
 exports.login = async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password, semester } = req.body;
+
+  console.log("Inside guide auth controller");
+  console.log(req.body);
 
   try {
-    const user = await prisma.student.findUnique({ where: { email } });
+    const user = await prisma.guide.findUnique({ where: { email } });
     if (!user)
       return res
         .status(401)
@@ -60,6 +64,8 @@ exports.login = async (req, res) => {
       { role: user.role, email: user.email },
       SECRET_KEY
     );
+
+    const role = user.role;
     res.json({ message: "success", token, role, email });
   } catch (error) {
     res.status(500).json({ message: "fail", error: error.message });
