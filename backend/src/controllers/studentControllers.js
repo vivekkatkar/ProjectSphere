@@ -99,8 +99,10 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 
   exports.getTeamDetails = async (req, res) => {
 	// join => team and student teamId on id => return name and prn
-	const teamId = req.params.id;
+	// res.status(200).send("Hello");
+	const teamId = parseInt(req.params.id);
 	const {semester, email} = req.user;
+
 	// console.log (semester, email);
 	// const projects = await prisma.project.findMany({
 	// 	include: {
@@ -115,6 +117,7 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 		}
 	});
 	console.log (`team details : ${JSON.stringify(teams, null, 2)}`);
+	return res.json ({message : "success", data : teams});
   }
 
 //   router.get ("/weeklyReport", authenticateToken, getAllReports);
