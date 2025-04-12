@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 export default function SideBar(){
     const navigate = useNavigate();
 
-    return <div className="w-50 bg-red-400 h-screen">
+    return <div className="w-50 bg-blue-300 h-screen">
         Side bar 
         <div onClick={() =>{
             navigate("/teacher/profile");

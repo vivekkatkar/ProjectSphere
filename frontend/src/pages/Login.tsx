@@ -12,7 +12,7 @@ function useQuery() {
 export function Login() {
     const query = useQuery();
     const user = query.get("user");
-    console.log(user);
+    console.log("user is ", user);
 
     const [form, setForm] = useState({
         email: '',

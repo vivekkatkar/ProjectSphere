@@ -6,29 +6,32 @@ require("dotenv").config();
 const SECRET_KEY = process.env.JWT_SECRET;
 
 exports.signup = async (req, res) => {
-  let { name, email, password, prn, semester, phone } = req.body;
-  console.log(name, email, password, prn, semester, phone);
+  let { name, email, password, prn, semester, year, phone } = req.body;
+  console.log(name, email, password, prn, semester, year, phone);
   semester = parseInt(semester);
 
   try {
-    console.log(name, email, password, prn, semester, phone);
+    console.log(name, email, password, prn, semester, year, phone);
     const existingUser = await prisma.student.findFirst({ where: { email } });
+    const existingUser1 = await prisma.student.findFirst({ where: { prn } });
     console.log(existingUser);
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
-
+    if (existingUser1){
+      return res.status(400).json({ message: "PRN already exists" });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
     await prisma.student.create({
-      data: { name, email, password: hashedPassword, prn, semester, phone },
+      data: { name, email, password: hashedPassword, prn, semester, year, phone },
     });
 
-    const token = jwt.sign({ semester: semester, email: email }, SECRET_KEY);
+    const token = jwt.sign({ semester: semester, email: email, year : year }, SECRET_KEY);
 
     res.json({ message: "registered successful", token });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Invalid input please try again" });
   }
 };
 
@@ -67,9 +70,10 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { semester: user.semester, email: user.email },
+      { semester: user.semester, email: user.email, year: user.year },
       SECRET_KEY
     );
+    
     res.json({ message: "success", token, semester, email });
   } catch (error) {
     console.log(error);

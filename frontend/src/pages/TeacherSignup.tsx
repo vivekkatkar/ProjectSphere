@@ -14,7 +14,7 @@ export default function TeacherSignup() {
     password : "",
     semester : "",
     phone : "",
-    confirmPassword : ""
+    confirmPassword : "",
   });
 
   interface ChangeEvent {
