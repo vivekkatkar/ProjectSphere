@@ -75,8 +75,24 @@ router.post("/notify", authenticateToken, async (req, res) => {
 });
 
 router.post("/notifications/team", authenticateToken, async (req, res) => {
+  const email = req.user.email;
   try {
-    const { teamId } = req.body;
+    
+    const user = await prisma.student.findFirst({
+      where : {
+        email
+      }
+    });
+    if(!user){
+      user = {
+        teamId : 0
+      }
+    };
+
+    const teamId = user.teamId;
+
+    console.log(user);
+    console.log(teamId);
 
     if (!teamId) {
       return res.status(400).json({

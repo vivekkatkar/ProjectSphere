@@ -21,26 +21,6 @@ router.get('/ideas', authenticateToken, getAllIdeas);
 router.get('/reports', authenticateToken, displayAllReports);
 router.post('/upload', authenticateToken, upload.single("file"), addReport);
 
-router.get('/report/:id/download', authenticateToken, async (req, res) => {
-    const reportId = parseInt(req.params.id);
-    try {
-      const report = await prisma.report.findUnique({
-        where: { id: reportId },
-      });
-  
-      if (!report) {
-        return res.status(404).send('Report not found');
-      }
-  
-      res.setHeader('Content-Type', 'application/pdf'); // or detect dynamically
-      res.setHeader('Content-Disposition', `attachment; filename=report-${reportId}.pdf`);
-      res.end(report.file);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Failed to download report');
-    }
-  });
-
 // router.get ("/team/:id", authenticateToken, getTeamDetails);
 
 router.get ('post', authenticateToken);
