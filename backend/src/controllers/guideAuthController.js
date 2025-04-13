@@ -1,4 +1,4 @@
-git remote set-url origin <new-remote-repo-URL>
+// git remote set-url origin <new-remote-repo-URL>
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const prisma = require("../config/prisma");

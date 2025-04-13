@@ -59,8 +59,8 @@ model report {
   id        Int      @id @default(autoincrement())
   teamId    Int?
   file      Bytes
+  
   createdAt DateTime @default(now())
-
   team      team?    @relation(fields: [teamId], references: [id])
 
   @@index([teamId], map: "Report_teamId_fkey")

@@ -258,7 +258,8 @@ exports.addReport = async (req, res) => {
 		const report = await prisma.report.create({
 		  data: {
 			teamId,
-			file: fileBuffer
+			file: fileBuffer, 
+			
 		  }
 		});
 	
