@@ -26,6 +26,9 @@ router.post("/teams/:id/synopsis/status", authenticateToken, guideController.upd
 
 router.get ("/years", authenticateToken, guideController.uniqueYears);
 
+// Get LA marks
+router.get("/teams/:id/marks", authenticateToken, guideController.getTeamMarks);        
+
 // Notifications
 router.post("/notify", authenticateToken, async (req, res) => {
   try {

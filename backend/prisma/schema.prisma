@@ -59,8 +59,9 @@ model report {
   id        Int      @id @default(autoincrement())
   teamId    Int?
   file      Bytes
+  status    Int      @default(0) // 0 -> pending, 1 ->submitted
+  week      Int
   createdAt DateTime @default(now())
-
   team      team?    @relation(fields: [teamId], references: [id])
 
   @@index([teamId], map: "Report_teamId_fkey")
@@ -124,4 +125,12 @@ model UserPreference {
   isEnabled Boolean  @default(true)
   
   @@id([userId, channel]) 
+}
+
+model Marks {
+  id        Int      @id @default(autoincrement()) 
+  teamId    Int?
+  LA1_marks Int?
+  LA2_marks Int?
+  ESE_marks Int?
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import axios from "axios";
+import axios from "../../api/uploader.js";
 
 export default function Profile() {
     const [data, setData] = useState();
@@ -9,7 +9,7 @@ export default function Profile() {
         async function getData() {
             try {
                 // const res = await axios.get("http://localhost:3000/guide/profile");
-                const res = await axios.get("http://localhost:3000/guide/profile", {
+                const res = await axios.get("guide/profile", {
                     headers: {
                       "Content-Type": "application/json",
                       "Authorization": `Bearer ${token}`

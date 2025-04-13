@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import axios from "../../api/uploader.js"
+
 
 export default function WeeklyReports() {
   const [reports, setReports] = useState([
@@ -17,22 +19,40 @@ export default function WeeklyReports() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:3000/student/reports", {
+      // const response = await fetch("http://localhost:3000/student/reports", {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+
+      // const data = await response.json();
+
+      // if (response.ok && data.reports) {
+      //   const formattedReports = data.reports.map((report) => ({
+      //     status: true,
+      //     week: report.week,
+      //     reportId: report.id, // Assume `id` is the report identifier
+      //   }));
+
+      //   setReports(formattedReports);
+
+      const response = await axios.get("student/reports", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      const data = await response.json();
-
-      if (response.ok && data.reports) {
+    
+      const data = response.data;
+    
+      if (data.reports) {
         const formattedReports = data.reports.map((report) => ({
           status: true,
           week: report.week,
-          reportId: report.id, // Assume `id` is the report identifier
+          reportId: report.id,
         }));
-
+    
         setReports(formattedReports);
+
       }
     } catch (err) {
       console.error("Failed to fetch reports:", err);
@@ -52,22 +72,36 @@ export default function WeeklyReports() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("http://localhost:3000/student/upload", {
-        method: "POST",
+      // const response = await fetch("http://localhost:3000/student/upload", {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   body: formData,
+      // });
+
+      // const data = await response.json();
+      // console.log(data);
+
+      // if (response.ok) {
+      //   alert("Report uploaded successfully!");
+      // } else {
+      //   alert("Upload failed: " + data.error);
+      // }
+
+
+      const response = await axios.post("student/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          // Do NOT set 'Content-Type' explicitly for FormData — Axios handles it automatically
         },
-        body: formData,
       });
-
-      const data = await response.json();
+    
+      const data = response.data;
       console.log(data);
+    
+      alert("Report uploaded successfully!");
 
-      if (response.ok) {
-        alert("Report uploaded successfully!");
-      } else {
-        alert("Upload failed: " + data.error);
-      }
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Upload failed.");
@@ -79,19 +113,16 @@ export default function WeeklyReports() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:3000/report/${reportId}/download`, {
+      const response = await axios.get(`report/${reportId}/download`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        responseType: 'blob', 
       });
+    
+      const url = URL.createObjectURL(new Blob([response.data]));
+      window.open(url); // Open
 
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        window.open(url); // Opens the file in a new tab or window
-      } else {
-        alert("Failed to download the report");
-      }
     } catch (err) {
       console.error("Error downloading the report:", err);
     }

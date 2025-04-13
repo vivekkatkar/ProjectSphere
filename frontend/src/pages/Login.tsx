@@ -4,10 +4,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { FaLock, FaUser } from 'react-icons/fa';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import axios from "../api/uploader.js"
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
-  }
+}
 
 export function Login() {
     const query = useQuery();
@@ -27,50 +28,112 @@ export function Login() {
         e.preventDefault();
         
         if(user == "student"){
-            console.log("Student auth");
-            const resp = await fetch("http://localhost:3000/student-auth/login", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  email: form.email,
-                  semester: form.semester,
-                  password: form.password,
-                }),
-            })
-            const data = await resp.json();
-            console.log (data);  
-            if (data.message == "fail") {
-                setError (data.error);
-                return ;
-            }
-            const token = data.token;
-            localStorage.setItem("token", token);  
-            navigate ("/student-dashboard")
-        }else{
-            console.log("guide auth");
-            const resp = await fetch("http://localhost:3000/guide-auth/login", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  email: form.email,
-                  semester: form.semester,
-                  password: form.password,
-                }),
-            })
-            const data = await resp.json();
-            console.log (data);  
-            if (data.message == "fail") {
-                setError (data.error);
-                return ;
-            }
-            const token = data.token;
-            localStorage.setItem("token", token);  
+            // console.log("Student auth");
+            // const resp = await fetch("http://localhost:3000/student-auth/login", {
+            //     method: "POST",
+            //     headers: {
+            //       "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify({
+            //       email: form.email,
+            //       semester: form.semester,
+            //       password: form.password,
+            //     }),
+            // })
+            // const data = await resp.json();
+            // console.log (data);  
+            // if (data.message == "fail") {
+            //     setError (data.error);
+            //     return ;
+            // }
+            // const token = data.token;
+            // localStorage.setItem("token", token);  
             // navigate ("/student-dashboard")
+
+            try {
+                const response = await axios.post("student-auth/login", {
+                  email: form.email,
+                  semester: form.semester,
+                  password: form.password,
+                }, {
+                  headers: {
+                    "Content-Type": "application/json",
+                  }
+                });
+              
+                const data = response.data;
+                console.log(data);
+              
+                if (data.message === "fail") {
+                  setError(data.error);
+                  return;
+                }
+              
+                const token = data.token;
+                localStorage.setItem("token", token);
+                navigate("/student-dashboard");
+              
+              } catch (error) {
+                const errorMsg = error.response?.data?.error || "Login failed.";
+                setError(errorMsg);
+              }
+            
+        }else{
+            // console.log("guide auth");
+            // const resp = await fetch("http://localhost:3000/guide-auth/login", {
+            //     method: "POST",
+            //     headers: {
+            //       "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify({
+            //       email: form.email,
+            //       semester: form.semester,
+            //       password: form.password,
+            //     }),
+            // })
+            // const data = await resp.json();
+            // console.log (data);  
+            // if (data.message == "fail") {
+            //     setError (data.error);
+            //     return ;
+            // }
+            // const token = data.token;
+            // localStorage.setItem("token", token);  
+            // // navigate ("/student-dashboard")
+            // window.open(`http://localhost:9563/?token=${token}`);
+
+            console.log("guide auth");
+
+            try {
+            const response = await axios.post("guide-auth/login", {
+                email: form.email,
+                semester: form.semester,
+                password: form.password,
+            }, {
+                headers: {
+                "Content-Type": "application/json",
+                }
+            });
+
+            const data = response.data;
+            console.log(data);
+
+            if (data.message === "fail") {
+                setError(data.error);
+                return;
+            }
+
+            const token = data.token;
+            localStorage.setItem("token", token);
             window.open(`http://localhost:9563/?token=${token}`);
+            
+            } catch (error) {
+            const errorMsg = error.response?.data?.error || "Login failed.";
+            setError(errorMsg);
+            }
+
+
+
         }
 
     }

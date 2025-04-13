@@ -83,6 +83,11 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 
 	  const user = await prisma.team.create({ data: { semester, name, year   } });
 	  const teamId = user.id;
+	  await prisma.marks.create({
+		data: {
+			teamId: teamId
+		}
+	  });
 		console.log (`teamId is ${teamId}`);
 	  await addTeamIDForOtherMembers(data, teamId, semester); //data is array of students
   

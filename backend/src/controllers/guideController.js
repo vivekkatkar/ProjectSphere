@@ -315,3 +315,31 @@ exports.uniqueYears = async (req, res) => {
     });
   }
 }
+
+// router.get("/teams/:id/marks", authenticateToken, guideController.getTeamMarks);     
+
+exports.getTeamMarks = async (req, res) => {
+  const teamId = parseInt(req.params.id);
+  try {
+    const marks = await prisma.marks.findFirst({
+      where: { teamId },
+      select: {
+        LA1_marks: true,
+        LA2_marks: true,
+        ESE_marks: true,
+      },
+    });
+
+    if (!marks) {
+      return res.status(404).json({ message: "Marks not found" });
+    }
+
+    res.json(marks);
+  } catch (err) {
+    console.log(e);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+
+

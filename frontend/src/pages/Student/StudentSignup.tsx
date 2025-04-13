@@ -6,6 +6,7 @@ import { Input } from "../../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "../../store/userSlice";
 import { useDispatch } from "react-redux";
+import axios from "../../api/uploader.js"
 
 export default function StudentSignup() {
   const dispatch = useDispatch();
@@ -38,38 +39,64 @@ export default function StudentSignup() {
     }
   
     try {
-      const resp = await fetch("http://localhost:3000/student-auth/signup", {
-        method: "POST",
+      // const resp = await fetch("http://localhost:3000/student-auth/signup", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     name: form.name,
+      //     email: form.email,
+      //     prn: form.prn,
+      //     semester: Number(form.semester),
+      //     password: form.password,
+      //     phone : form.phone,
+      //     year : Number(form.year),
+      //   }),
+      // });
+  
+      // const data = await resp.json();
+  
+      // if (!resp.ok) {
+      //   const errorMsg = data?.message || data?.error || "Signup failed. Please try again.";
+      //   alert(errorMsg);
+      //   return;
+      // }
+  
+      // if (!data.token) {
+      //   alert("Signup succeeded, but no token received.");
+      //   return;
+      // }
+  
+      // localStorage.setItem("token", data.token);
+      // dispatch(setUser({ name: form.name, year : form.year, email : form.year }));
+      // navigate("/student-dashboard");
+      
+      const response = await axios.post("student-auth/signup", {
+        name: form.name,
+        email: form.email,
+        prn: form.prn,
+        semester: Number(form.semester),
+        password: form.password,
+        phone: form.phone,
+        year: Number(form.year),
+      }, {
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          prn: form.prn,
-          semester: Number(form.semester),
-          password: form.password,
-          phone : form.phone,
-          year : Number(form.year),
-        }),
+        }
       });
-  
-      const data = await resp.json();
-  
-      if (!resp.ok) {
-        const errorMsg = data?.message || data?.error || "Signup failed. Please try again.";
-        alert(errorMsg);
-        return;
-      }
-  
+    
+      const data = response.data;
+    
       if (!data.token) {
         alert("Signup succeeded, but no token received.");
         return;
       }
-  
+    
       localStorage.setItem("token", data.token);
-      dispatch(setUser({ name: form.name, year : form.year, email : form.year }));
+      dispatch(setUser({ name: form.name, year: form.year, email: form.year }));
       navigate("/student-dashboard");
+
     } catch (error) {
       console.error("Signup error:", error);
       alert("An unexpected error occurred. Please try again later.");
