@@ -11,6 +11,7 @@ model batch {
   id       Int      @id @default(autoincrement())
   name     String
   semester Int
+  year     Int
   guideId  Int?
 
   guide    guide?   @relation(fields: [guideId], references: [id])
@@ -23,6 +24,7 @@ model guide {
   id       Int      @id @default(autoincrement())
   name     String
   password String
+  year     Int
   phone    String
   role     String
   email    String   @unique(map: "Guide_email_key")
@@ -70,6 +72,7 @@ model student {
   id       Int     @id @default(autoincrement())
   email    String  @unique(map: "Student_email_key")
   password String
+  year     Int
   name     String
   prn      String @unique(map: "Student_prn_key")
   phone    String
@@ -87,6 +90,7 @@ model student {
 model team {
   id       Int    @default(autoincrement())
   semester Int
+  year     Int
   name     String
   guideId  Int?
 

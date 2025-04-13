@@ -15,12 +15,13 @@ const SECRET_KEY = process.env.JWT_SECRET;
 //   }
 
 exports.signup = async (req, res) => {
-  let { name, email, password, role, phone, semester } = req.body;
+  
+  let { name, email, password, role, phone, year, semester } = req.body;
   semester = parseInt(semester);
 
   try {
     console.log(name, email, password, role, phone, semester);
-    const existingUser = await prisma.student.findFirst({ where: { email } });
+    const existingUser = await prisma.guide.findFirst({ where: { email } });
     console.log(existingUser);
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
