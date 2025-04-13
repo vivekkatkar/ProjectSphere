@@ -4,6 +4,7 @@ const { route } = require("./authRoutes");
 const guideController = require("../controllers/guideController");
 const prisma = require("../config/prisma");
 
+
 const router = express.Router();
 
 // Profile
@@ -22,6 +23,11 @@ router.get("/teams/:id/reports", authenticateToken, guideController.getReports);
 
 router.get("/teams/:id/synopsis", authenticateToken, guideController.getSynopsis);
 router.post("/teams/:id/synopsis/status", authenticateToken, guideController.updateSynopsisStatus);
+
+router.get ("/years", authenticateToken, guideController.uniqueYears);
+
+// Get LA marks
+router.get("/teams/:id/marks", authenticateToken, guideController.getTeamMarks);        
 
 // Notifications
 router.post("/notify", authenticateToken, async (req, res) => {
@@ -72,8 +78,24 @@ router.post("/notify", authenticateToken, async (req, res) => {
 });
 
 router.post("/notifications/team", authenticateToken, async (req, res) => {
+  const email = req.user.email;
   try {
-    const { teamId } = req.body;
+    
+    const user = await prisma.student.findFirst({
+      where : {
+        email
+      }
+    });
+    if(!user){
+      user = {
+        teamId : 0
+      }
+    };
+
+    const teamId = user.teamId;
+
+    console.log(user);
+    console.log(teamId);
 
     if (!teamId) {
       return res.status(400).json({

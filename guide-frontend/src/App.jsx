@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import Notify from "./components/Notify";
 
 function App() {
-
+  
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");

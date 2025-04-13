@@ -1,3 +1,4 @@
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const prisma = require("../config/prisma");
@@ -16,7 +17,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 exports.signup = async (req, res) => {
   
-  let { name, email, password, role, phone, year, semester } = req.body;
+  let { name, email, password, role, phone, semester } = req.body;
   semester = parseInt(semester);
 
   try {

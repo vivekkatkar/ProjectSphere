@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../api/uploader.js";
 import { useEffect, useState } from "react";
 
 export default function Notify() {
@@ -10,7 +10,7 @@ export default function Notify() {
   useEffect(() => {
     async function getTeams() {
       try {
-        const res = await axios.get(url, {
+        const res = await axios.get("guide/teams", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -51,7 +51,7 @@ export default function Notify() {
     console.log(localStorage.getItem("token"));
     try {
         const res = await axios.post(
-          "http://localhost:3000/guide/notify",
+          "guide/notify",
           {
             teamIds: Array.from(selectedTeams),
             message: message,

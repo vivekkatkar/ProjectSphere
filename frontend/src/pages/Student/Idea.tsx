@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../api/uploader.js"
 import { useState, useEffect } from "react";
 
 const Idea = () => {
@@ -35,33 +35,61 @@ const Idea = () => {
     async function getDetails() {
         try {
             const token = localStorage.getItem("token");
-            await fetch("http://localhost:3000/student/profile", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            }).then(resp => {
-                if (!resp.ok) throw new Error("Failed to fetch student data");
-                return resp.json();
-            })
-            .then(data => {
-                console.log (data);
-                setStudent(() => {
-                    console.log (data.data);
-                    const updatedStudent = {
-                        Name: data.data.name,
-                        PRN: data.data.prn ,
-                        Batch: data.data.batch || 0,
-                        Guide: data.data.guide?.name || 0,
-                        Semester: data.data.semester || 6,
-                        teamId: data.data.teamId || 0
-                    };
-                    return updatedStudent;
-                });
+            
+            // await fetch("http://localhost:3000/student/profile", {
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": `Bearer ${token}`
+            //     }
+            // }).then(resp => {
+            //     if (!resp.ok) throw new Error("Failed to fetch student data");
+            //     return resp.json();
+            // })
+            // .then(data => {
+            //     console.log (data);
+            //     setStudent(() => {
+            //         console.log (data.data);
+            //         const updatedStudent = {
+            //             Name: data.data.name,
+            //             PRN: data.data.prn ,
+            //             Batch: data.data.batch || 0,
+            //             Guide: data.data.guide?.name || 0,
+            //             Semester: data.data.semester || 6,
+            //             teamId: data.data.teamId || 0
+            //         };
+            //         return updatedStudent;
+            //     });
                 
-            })
-            .catch(error => console.error("Error fetching details:", error));           
+            // })
+            // .catch(error => console.error("Error fetching details:", error));  
+
+            
+          axios.get("student/profile", {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+          })
+          .then(response => {
+            const data = response.data;
+            console.log(data);
+            setStudent(() => {
+                console.log(data.data);
+                const updatedStudent = {
+                    Name: data.data.name,
+                    PRN: data.data.prn,
+                    Batch: data.data.batch || 0,
+                    Guide: data.data.guide?.name || 0,
+                    Semester: data.data.semester || 6,
+                    teamId: data.data.teamId || 0
+                };
+                return updatedStudent;
+            });
+          })
+          .catch(error => console.error("Error fetching details:", error));
+
+
         } catch (error) {
             console.error("Error fetching details:", error);
         }
@@ -80,7 +108,7 @@ const Idea = () => {
     const fetchIdea = async () => {
         try {
           const res = await axios.post(
-            "http://localhost:3000/student/ideas",
+            "student/ideas",
             {},
             {
               headers: {
@@ -88,6 +116,7 @@ const Idea = () => {
               },
             }
           );
+          console.log("Ideas --> ");
           console.log(res.data);
           setIdeas(res.data.ideas);
         } catch (error) {
@@ -133,7 +162,7 @@ const Idea = () => {
     const handleSubmit = async () => {
         try {
           const res = await axios.post(
-            "http://localhost:3000/student/addIdea",
+            "student/addIdea",
             { topic : newIdea },
             {
               headers: {
@@ -179,7 +208,7 @@ const Idea = () => {
       </div>
     )}
 
-    {pendingIdeas.length > 0 && (
+    {hasApprovedIdea == false && pendingIdeas.length > 0 && (
       <div className="mb-6">
         <h3 className="text-yellow-600 font-semibold">Pending Ideas</h3>
         {pendingIdeas.map((idea) => (

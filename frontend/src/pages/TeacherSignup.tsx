@@ -4,6 +4,7 @@ import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "../api/uploader.js"
 
 export default function TeacherSignup() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function TeacherSignup() {
     password : "",
     semester : "",
     phone : "",
-    confirmPassword : ""
+    confirmPassword : "",
   });
 
   interface ChangeEvent {
@@ -32,27 +33,55 @@ export default function TeacherSignup() {
       return;
     }
   
-    const resp = await fetch("http://localhost:3000/guide-auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    // const resp = await fetch("http://localhost:3000/guide-auth/signup", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     name: form.name,
+    //     email: form.email,
+    //     semester: form.semester,
+    //     role: form.role,
+    //     phone: form.phone,
+    //     password: form.password,
+    //   }),
+    // })
+    // const data = await resp.json();
+    // console.log (data);  
+    // const token = data.token;
+    // console.log(token);
+    // localStorage.setItem("token", token); 
+    // // window.open("http://localhost:9563/");
+    // window.open(`http://localhost:9563/?token=${token}`);
+
+    try {
+      const response = await axios.post("guide-auth/signup", {
         name: form.name,
         email: form.email,
         semester: form.semester,
         role: form.role,
         phone: form.phone,
         password: form.password,
-      }),
-    })
-    const data = await resp.json();
-    console.log (data);  
-    const token = data.token;
-    console.log(token);
-    localStorage.setItem("token", token); 
-    // window.open("http://localhost:9563/");
-    window.open(`http://localhost:9563/?token=${token}`);
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+    
+      const data = response.data;
+      console.log(data);
+    
+      const token = data.token;
+      console.log(token);
+      localStorage.setItem("token", token);
+    
+      window.open(`http://localhost:9563/?token=${token}`);
+      
+    } catch (error) {
+      console.error("Signup failed:", error.response?.data || error.message);
+    }
+    
 
   }
 

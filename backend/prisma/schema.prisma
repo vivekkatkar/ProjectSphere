@@ -11,9 +11,8 @@ model batch {
   id       Int      @id @default(autoincrement())
   name     String
   semester Int
-  year     Int
+  year     Int      @default(0)
   guideId  Int?
-
   guide    guide?   @relation(fields: [guideId], references: [id])
   students student[]
 
@@ -61,8 +60,9 @@ model report {
   id        Int      @id @default(autoincrement())
   teamId    Int?
   file      Bytes
+  status    Int      @default(0) // 0 -> pending, 1 ->submitted
+  week      Int
   createdAt DateTime @default(now())
-
   team      team?    @relation(fields: [teamId], references: [id])
 
   @@index([teamId], map: "Report_teamId_fkey")
@@ -72,7 +72,7 @@ model student {
   id       Int     @id @default(autoincrement())
   email    String  @unique(map: "Student_email_key")
   password String
-  year     Int
+  year     Int   @default(0)
   name     String
   prn      String @unique(map: "Student_prn_key")
   phone    String
@@ -93,12 +93,12 @@ model team {
   year     Int
   name     String
   guideId  Int?
-
   guide    guide?    @relation(fields: [guideId], references: [id])
   students student[]
   projects project[]
   reports  report[]
   ideas    Idea[]
+  year    Int   @default(0)
 
   @@id([id, semester])
   @@unique([id], map: "Team_id_unique")
@@ -127,4 +127,12 @@ model UserPreference {
   isEnabled Boolean  @default(true)
   
   @@id([userId, channel]) 
+}
+
+model Marks {
+  id        Int      @id @default(autoincrement()) 
+  teamId    Int?
+  LA1_marks Int?
+  LA2_marks Int?
+  ESE_marks Int?
 }
