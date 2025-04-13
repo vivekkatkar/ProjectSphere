@@ -88,6 +88,7 @@ const Idea = () => {
               },
             }
           );
+          console.log("Ideas --> ");
           console.log(res.data);
           setIdeas(res.data.ideas);
         } catch (error) {

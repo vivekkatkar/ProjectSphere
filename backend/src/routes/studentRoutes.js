@@ -16,7 +16,7 @@ router.get ("/team/:id", authenticateToken, getTeamDetails);
 
 router.post('/addIdea', authenticateToken, addIdea);
 
-router.get('/ideas', authenticateToken, getAllIdeas);
+router.post('/ideas', authenticateToken, getAllIdeas);
 
 router.get('/reports', authenticateToken, displayAllReports);
 router.post('/upload', authenticateToken, upload.single("file"), addReport);

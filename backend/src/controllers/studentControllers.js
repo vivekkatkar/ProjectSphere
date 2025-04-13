@@ -104,10 +104,6 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 
   exports.getTeamDetails = async (req, res) => {
 	// join => team and student teamId on id => return name and prn
-<<<<<<< HEAD
-	// res.status(200).send("Hello");
-=======
->>>>>>> 4bd32a4ddd25917dd849bac91d7ee1e36882e18d
 	const teamId = parseInt(req.params.id);
 	const {semester, email} = req.user;
 
@@ -126,10 +122,6 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	});
 	console.log (`team details : ${JSON.stringify(teams, null, 2)}`);
 	return res.json ({message : "success", data : teams});
-<<<<<<< HEAD
-=======
-
->>>>>>> 4bd32a4ddd25917dd849bac91d7ee1e36882e18d
   }
 
 
@@ -186,10 +178,12 @@ exports.getAllIdeas = async (req, res) => {
     try {
       const email = req.user.email;
   
+
       const student = await prisma.student.findUnique({
         where: { email },
       });
-  
+	  
+	  console.log("In idea controller : ", student);
       if (!student || !student.teamId) {
         return res.status(404).json({ message: "Student or team not found" });
       }
