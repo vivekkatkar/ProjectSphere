@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Teams() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [teamDetails, setTeamDetails] = useState([]);
+  const [years, setYears] = useState([]);
+
 
   useEffect(() => {
-    
     const token = localStorage.getItem("token");
     async function getData() {
       try {
@@ -29,11 +30,35 @@ export default function Teams() {
     }
 
     getData();
+    getYears();
   }, []);
+
+  async function getYears() {
+      const resp = await fetch ("http://localhost:3000/guide/years", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+
+      if (resp.ok){
+        console.log (resp);
+        const data = await resp.data.data;
+        setYears(data);
+      }
+      else{
+        alert ("Something went wrong while fetching years");
+      }
+    }
 
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
+        <div> 
+          Select the year : 
+          
+        </div>
         {teams == null || teams.length === 0 ? (
           <div>Loading...</div>
         ) : (
@@ -60,7 +85,7 @@ export default function Teams() {
                   <p className="text-gray-500">No students in this team.</p>
                 )}
               </div>
-              <button className="bg-red-500 p-3 m-2" onClick={() => {
+              <button className="bg-blue-500 p-3 m-2 text-white" onClick={() => {
                 navigate("/teacher/team", {state : {
                     team : team,
                     teamDetails : teamDetails[index]
@@ -73,4 +98,5 @@ export default function Teams() {
       </div>
     </div>
   );
+
 }

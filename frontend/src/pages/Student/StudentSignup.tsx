@@ -4,14 +4,18 @@ import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { setUser } from "../../store/userSlice";
+import { useDispatch } from "react-redux";
 
 export default function StudentSignup() {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     email: "",
     prn : "",
     semester : 0,
     password: "",
+    year : 0,
     phone : "",
     confirmPassword : "",
   });
@@ -33,27 +37,45 @@ export default function StudentSignup() {
       return;
     }
   
-    const resp = await fetch("http://localhost:3000/student-auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        prn: form.prn,
-        semester: form.semester,
-        password: form.password,
-        phone: form.phone,
-      }),
-    })
-    const data = await resp.json();
-    console.log (data);  
-    const token = data.token;
-    localStorage.setItem("token", token); 
-    navigate ("/student-dashboard")
-  }
+    try {
+      const resp = await fetch("http://localhost:3000/student-auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          prn: form.prn,
+          semester: Number(form.semester),
+          password: form.password,
+          phone : form.phone,
+          year : Number(form.year),
+        }),
+      });
   
+      const data = await resp.json();
+  
+      if (!resp.ok) {
+        const errorMsg = data?.message || data?.error || "Signup failed. Please try again.";
+        alert(errorMsg);
+        return;
+      }
+  
+      if (!data.token) {
+        alert("Signup succeeded, but no token received.");
+        return;
+      }
+  
+      localStorage.setItem("token", data.token);
+      dispatch(setUser({ name: form.name, year : form.year, email : form.year }));
+      navigate("/student-dashboard");
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  }
+
   function handleChange (e: ChangeEvent){
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -93,6 +115,30 @@ export default function StudentSignup() {
               />
             </div>
             <div className="flex items-center border rounded px-3 py-2">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <Input
+                type="phone"
+                name="phone"
+                placeholder="Your Phone Number"
+                value={form.phone}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <Input
+                type="year"
+                name="year"
+                placeholder="Passing Year (2026)"
+                value={form.year}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+            <div className="flex items-center border rounded px-3 py-2">
               <FaChild className="text-gray-400 mr-2" />
               <Input
                 type="text"
@@ -104,20 +150,6 @@ export default function StudentSignup() {
                 className="w-full border-none focus:ring-0"
               />
             </div>
-
-            <div className="flex items-center border rounded px-3 py-2">
-              <FaChild className="text-gray-400 mr-2" />
-              <Input
-                type="text"
-                name="phone"
-                placeholder="Your phone no"
-                value={form.phone}
-                onChange={handleChange}
-                required
-                className="w-full border-none focus:ring-0"
-              />
-            </div>
-
             <div className="flex items-center border rounded px-3 py-2">
               <FaChild className="text-gray-400 mr-2" />
               <Input

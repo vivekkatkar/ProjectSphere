@@ -107,7 +107,7 @@ const Profile = () => {
             const data = await resp.json();
             console.log("Team details received:", data);
     
-            const teamArray = data.data.map(member => ({
+            const teamArray = data.data.map((member : any) => ({
                 name: member.name,
                 prn: member.prn
             }));

@@ -54,8 +54,10 @@ export default function CreateTeam() {
     async function handleTeamCreation(){
         console.log ("team creation");
         console.log (selectedOptions);
-        if(selectedOptions == null || selectedOptions.length == 0) return;
-        
+        if (!selectedOptions){
+            alert ("Please select team members");
+            return;
+        } 
         const token = localStorage.getItem("token");
         await fetch("http://localhost:3000/student/createTeam", {
             method: "POST",

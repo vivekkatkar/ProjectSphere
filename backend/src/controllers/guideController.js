@@ -290,3 +290,28 @@ exports.updateSynopsisStatus = async (req, res) => {
     });
   }
 };
+
+// returning yeare
+
+exports.uniqueYears = async (req, res) => {
+  try {
+    const uniqueYears = await prisma.student.groupBy({
+      by: ['year'],
+      orderBy: {
+        year: 'desc'
+      },
+    });
+
+    res.json ({
+      status :  "success",
+      data : uniqueYears,
+    })
+  }
+  catch (e){
+    console.log ("Get years : ", e)
+    return res.status(500).json({
+      status: "failed",
+      error: e.message,
+    });
+  }
+}

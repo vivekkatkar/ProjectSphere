@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import { Login } from "./pages/Login";
 import StudentSignup from "./pages/Student/StudentSignup";
-import TeacherSignup from "./pages/teacherSignup";
+import TeacherSignup from "./pages/TeacherSignup";
 import Dashboard from "./pages/Student/Dashboard";
 import Profile from "./pages/Student/Profile";
 import Idea from "./pages/Student/Idea";

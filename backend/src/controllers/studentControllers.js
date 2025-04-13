@@ -76,11 +76,12 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	try {
 	  const data = req.body.team;
 	  const name = req.body.teamName;
+	  const year = req.user.year;
 	  let semester = req.user.semester;
-		
+		console.log ("in create team ",  year);
 	//   console.log (`create team \n : ${data}` );
 
-	  const user = await prisma.team.create({ data: { semester, name } });
+	  const user = await prisma.team.create({ data: { semester, name, year   } });
 	  const teamId = user.id;
 		console.log (`teamId is ${teamId}`);
 	  await addTeamIDForOtherMembers(data, teamId, semester); //data is array of students
@@ -91,6 +92,10 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	  });
 	} catch (e) {
 	  console.log(e);
+	  return res.status(500).json({
+		status: "failed",	
+		message: "Failed to create team",
+	  });
 	}
   };
 
@@ -99,7 +104,10 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 
   exports.getTeamDetails = async (req, res) => {
 	// join => team and student teamId on id => return name and prn
+<<<<<<< HEAD
 	// res.status(200).send("Hello");
+=======
+>>>>>>> 4bd32a4ddd25917dd849bac91d7ee1e36882e18d
 	const teamId = parseInt(req.params.id);
 	const {semester, email} = req.user;
 
@@ -118,16 +126,154 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 	});
 	console.log (`team details : ${JSON.stringify(teams, null, 2)}`);
 	return res.json ({message : "success", data : teams});
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4bd32a4ddd25917dd849bac91d7ee1e36882e18d
   }
 
-//   router.get ("/weeklyReport", authenticateToken, getAllReports);
 
-exports.getAllReports = async (req, res) => {
+// Add idea
+
+exports.addIdea = async (req, res) => {
+    console.log("Inside Add idea");
+    try {
+      const email = req.user.email;
+      const student = await prisma.student.findUnique({
+        where: { email },
+      });
+      
+      console.log("Fetched student data", student);
+
+      if (!student || !student.teamId) {
+        return res.status(400).json({ message: "Student or team not found" });
+      }
+  
+      const { topic } = req.body;
+      
+      console.log("Extracted topic ", topic);
+
+      if (!topic || topic.trim() === "") {
+        return res.status(400).json({ message: "Topic is required" });
+      }
+      
+      console.log("started data insertion");
+      const newIdea = await prisma.idea.create({
+        data: {
+          topic,
+          comment: "",         // Empty for now, will be updated by guide later
+          approved: 0,         // 0 -> pending
+          teamId: student.teamId,
+        },
+      });
+  
+      return res.status(201).json({
+        status: "Success",
+        message: "Idea submitted successfully",
+        idea: newIdea,
+      });
+  
+    } catch (error) {
+      console.error("Error submitting idea:", error);
+      return res.status(500).json({
+        status: "Error",
+        message: "Failed",
+      });
+    }
+  }
+
+exports.getAllIdeas = async (req, res) => {
+    try {
+      const email = req.user.email;
+  
+      const student = await prisma.student.findUnique({
+        where: { email },
+      });
+  
+      if (!student || !student.teamId) {
+        return res.status(404).json({ message: "Student or team not found" });
+      }
+  
+      const ideas = await prisma.idea.findMany({
+        where: {
+          teamId: student.teamId,
+        },
+      });
+  
+      return res.status(200).json({
+        status: "Success",
+        ideas,
+      });
+  
+    } catch (error) {
+      console.error("Error fetching student ideas:", error);
+      return res.status(500).json({
+        status: "Error",
+        message: "Failed to fetch student ideas",
+      });
+    }
+  }
+
+
+//   router.get('/reports', authenticateToken, displayAllReports);
+
+// model report {
+// 	id        Int      @id @default(autoincrement())
+// 	teamId    Int?
+// 	file      Bytes
+// 	createdAt DateTime @default(now())
+  
+// 	team      team?    @relation(fields: [teamId], references: [id])
+  
+// 	@@index([teamId], map: "Report_teamId_fkey")
+//   }
+
+exports.displayAllReports = async (req, res) => {
 	try {
-		
-	} catch (e) {
+		const teamId = parseInt(req.user.teamId);
+		const reports = await prisma.report.findMany({
+			where: { teamId },
+		});
 
+		const formatted = reports.map((report, idx) => ({
+			id: report.id,
+			week: idx + 1,
+			downloadUrl: `/student/report/${report.id}/download`,
+		  }));
+
+		res.status(200).json({
+			status: "success",
+			message: "Reports fetched successfully!",
+			reports: formatted,
+		});
+	} catch (e) {
+		console.error(e);
+		res.status(500).json({
+			status: "failed",
+			message: "Failed to fetch all reports!",
+		});
 	}
+};
+
+//   router.post('/upload', authenticateToken, addReport);
+
+exports.addReport = async (req, res) => {
+	try {
+		const teamId = parseInt(req.user.teamId);
+		const fileBuffer = req.file.buffer;
+	
+		const report = await prisma.report.create({
+		  data: {
+			teamId,
+			file: fileBuffer
+		  }
+		});
+	
+		res.status(200).json({ message: "Report uploaded", report });
+	  } catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Failed to upload report" });
+	  }
 }
 
-//   router.post ("/weeklyReport/upload", authenticateToken, uploadReport);
+
