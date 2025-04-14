@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-
+import axios from "axios";
 export default function WeeklyReports() {
   const [reports, setReports] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -62,17 +62,34 @@ export default function WeeklyReports() {
       formData.append("teamId", teamId);
       formData.append("week", week.toString());
 
-      const response = await fetch("http://localhost:3000/student/upload", {
-        method: "POST",
+      // const response = await fetch("http://localhost:3000/student/upload", {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   body: formData,
+      // });
+
+      // const data = await response.json();
+      // console.log(data);
+
+      // if (response.ok) {
+      //   alert("Report uploaded successfully!");
+      // } else {
+      //   alert("Upload failed: " + data.error);
+      // }
+
+
+      const response = await axios.post("student/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          // Do NOT set 'Content-Type' explicitly for FormData — Axios handles it automatically
         },
-        body: formData,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         alert("Report uploaded successfully!");
         setFile(null);
         if (inputRef.current) inputRef.current.value = "";
@@ -94,6 +111,7 @@ export default function WeeklyReports() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        // Removed invalid responseType property
       });
 
       if (response.ok) {

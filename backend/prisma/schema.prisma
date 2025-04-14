@@ -26,7 +26,6 @@ model guide {
   phone    String
   role     String
   email    String   @unique(map: "Guide_email_key")
-  semester Int
 
   teams    team[]
   batches  batch[]
@@ -122,4 +121,12 @@ model UserPreference {
   isEnabled Boolean  @default(true)
   
   @@id([userId, channel]) 
+}
+
+model Marks {
+  id        Int      @id @default(autoincrement()) 
+  teamId    Int?
+  LA1_marks Int?
+  LA2_marks Int?
+  ESE_marks Int?
 }

@@ -4,7 +4,8 @@ import CreateTeam from "../../createdComp/CreateTeam";
 import { get } from "http";
 import { useDispatch } from "react-redux";
 import { setUser, clearUser } from "../../store/userSlice";
-
+// import axios from "../../api/uploader.js"
+import axios from "axios";
 
 const Profile = () => {
     // function to request backend and get info
@@ -53,23 +54,49 @@ const Profile = () => {
     async function getDetails() {
         try {
             const token = localStorage.getItem("token");
-            await fetch("http://localhost:3000/student/profile", {
-                method: "GET",
+           
+            // await fetch("http://localhost:3000/student/profile", {
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": `Bearer ${token}`
+            //     }
+            // }).then(resp => {
+            //     if (!resp.ok) throw new Error("Failed to fetch student data");
+            //     return resp.json();
+            // })
+            // .then(data => {
+            //     console.log (data);
+            //     setStudent(() => {
+            //         console.log (data.data);
+            //         const updatedStudent = {
+            //             Name: data.data.name,
+            //             PRN: data.data.prn ,
+            //             Batch: data.data.batch || 0,
+            //             Guide: data.data.guide?.name || 0,
+            //             Semester: data.data.semester,   
+            //             teamId: data.data.teamId || 0
+            //         };
+            //         return updatedStudent;
+            //     });
+            // })
+            // .catch(error => console.error("Error fetching details:", error));     
+            
+            
+            axios.get("student/profile", {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
-            }).then(resp => {
-                if (!resp.ok) throw new Error("Failed to fetch student data");
-                return resp.json();
             })
-            .then(data => {
-                console.log (data);
+            .then(response => {
+                const data = response.data;
+                console.log(data);
                 setStudent(() => {
-                    console.log (data.data);
+                    console.log(data.data);
                     const updatedStudent = {
                         Name: data.data.name,
-                        PRN: data.data.prn ,
+                        PRN: data.data.prn,
                         Batch: data.data.batch || 0,
                         Guide: data.data.guide?.name || 0,
                         Semester: data.data.semester,   
@@ -119,32 +146,50 @@ const Profile = () => {
         console.log("Fetching team details for teamId:", student.teamId);
     
         try {
-            const resp = await fetch(`http://localhost:3000/student/team/${student.teamId}`, {
-                method: "GET",
+            // const resp = await fetch(`http://localhost:3000/student/team/${student.teamId}`, {
+            //     method: "GET",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": `Bearer ${localStorage.getItem("token")}`
+            //     }
+            // });
+    
+            // console.log("Response status:", resp.status);
+    
+            // if (!resp.ok) {
+            //     const errorText = await resp.text(); // helpful for debugging
+            //     console.error("Failed to fetch team data. Server says:", errorText);
+            //     return;
+            // }
+    
+            // const data = await resp.json();
+            // console.log("Team details received:", data);
+    
+            // const teamArray = data.data.map((member : any) => ({
+            //     name: member.name,
+            //     prn: member.prn
+            // }));
+    
+            // setTeam(teamArray); // single state update instead of loop
+    
+            const response = await axios.get(`student/team/${student.teamId}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
             });
-    
-            console.log("Response status:", resp.status);
-    
-            if (!resp.ok) {
-                const errorText = await resp.text(); // helpful for debugging
-                console.error("Failed to fetch team data. Server says:", errorText);
-                return;
-            }
-    
-            const data = await resp.json();
+        
+            console.log("Response status:", response.status);
+        
+            const data = response.data;
             console.log("Team details received:", data);
-    
+        
             const teamArray = data.data.map((member : any) => ({
                 name: member.name,
                 prn: member.prn
             }));
-    
-            setTeam(teamArray); // single state update instead of loop
-    
+        
+            setTeam(teamArray);
         } catch (err) {
             console.error("Error while fetching team details:", err);
         }

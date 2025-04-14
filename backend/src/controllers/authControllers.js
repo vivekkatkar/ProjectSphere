@@ -39,6 +39,8 @@ exports.signup = async (req, res) => {
 //     id         Int      @id @default(autoincrement())
 //     email   String   @unique
 //     password   String
+//     year     Int
+//     phone    String
 //     name  String
 //     prn   Int           @unique
 //     teamId Int    @default(0)

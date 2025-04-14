@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../../api/uploader.js";
 
 export default function Notification() {
   interface Notification {
@@ -17,7 +17,7 @@ export default function Notification() {
     async function fetchNotification() {
       try {
         const res = await axios.post(
-          "http://localhost:3000/guide/notifications/team",
+          "guide/notifications/team",
           { teamId },
           {
             headers: {
@@ -41,7 +41,7 @@ export default function Notification() {
   const handleMarkAsRead = async (id : any) => {
     try {
       await axios.patch(
-        `http://localhost:3000/guide/notifications/${id}/read`,
+        `guide/notifications/${id}/read`,
         {},
         {
           headers: {

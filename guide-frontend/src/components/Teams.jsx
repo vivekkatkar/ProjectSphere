@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../api/uploader.js";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export default function Teams() {
       try {
         // const res = await axios.get("http://localhost:3000/guide/teams");
         
-        const res = await axios.get("http://localhost:3000/guide/teams", {
+        const res = await axios.get("guide/teams", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
@@ -34,23 +34,21 @@ export default function Teams() {
   }, []);
 
   async function getYears() {
-      const resp = await fetch ("http://localhost:3000/guide/years", {
-        method: "GET",
+    try {
+      const resp = await axios.get("guide/years", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      })
-
-      if (resp.ok){
-        console.log (resp);
-        const data = await resp.data.data;
-        setYears(data);
-      }
-      else{
-        alert ("Something went wrong while fetching years");
-      }
+      });
+  
+      const data = resp.data.data;
+      setYears(data); 
+    } catch (error) {
+      console.error("Error fetching years:", error);
+      alert("Something went wrong while fetching years");
     }
+  }
 
   return (
     <div>

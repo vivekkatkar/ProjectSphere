@@ -12,6 +12,7 @@ import WeeklyReports from "./pages/Student/WeeklyReports";
 import AllProjects from "./pages/Student/AllProjects";
 import Notification from "./pages/Student/Notification";
 import ProjectDetails from "./pages/Student/ProjectDetails";
+import Evaluation from "./pages/Student/Evaluation";
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="notifications" element={<Notification />} />
             <Route path="all-projects" element = {<AllProjects/>}/>
             <Route path="project-details" element = {<ProjectDetails/>}/>
+            <Route path="evaluation" element = {<Evaluation/>}/>
         </Route>
       </Routes>
     </div>

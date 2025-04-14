@@ -25,6 +25,7 @@ router.get("/teams/:id/synopsis", authenticateToken, guideController.getSynopsis
 router.post("/teams/:id/synopsis/status", authenticateToken, guideController.updateSynopsisStatus);
 
 router.get ("/years", authenticateToken, guideController.uniqueYears);
+     
 
 // Notifications
 router.post("/notify", authenticateToken, async (req, res) => {

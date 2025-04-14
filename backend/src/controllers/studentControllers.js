@@ -85,6 +85,11 @@ async function addTeamIDForOtherMembers(team, teamId, semester) {
 
 	  const user = await prisma.team.create({ data: { semester, name, year   } });
 	  const teamId = user.id;
+	  await prisma.marks.create({
+		data: {
+			teamId: teamId
+		}
+	  });
 		console.log (`teamId is ${teamId}`);
 	  await addTeamIDForOtherMembers(data, teamId, semester); //data is array of students
   
@@ -263,5 +268,31 @@ exports.addReport = async (req, res) => {
 	}
 };
 
+
+// router.get("/marks", authenticateToken, getTeamMarks);   
+
+exports.getTeamMarks = async (req, res) => {
+		const teamId = 2; //store teamId in local storage and get it from there
+	try {
+	  const marks = await prisma.marks.findFirst({
+		where: { teamId },
+		select: {
+		  LA1_marks: true,
+		  LA2_marks: true,
+		  ESE_marks: true,
+		},
+	  });
+  
+	  if (!marks) {
+		console.log("Marks not found for teamId:", teamId);
+		return res.status(404).json({ message: "Marks not found" });
+	  }
+  
+	  res.json(marks);
+	} catch (err) {
+	  console.log(e);
+	  res.status(500).json({ error: "Server Error" });
+	}
+  };
 
 

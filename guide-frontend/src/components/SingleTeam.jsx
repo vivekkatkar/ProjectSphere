@@ -1,6 +1,67 @@
-import axios from "axios";
+import axios from "../../api/uploader.js";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+
+function TeamMarks({ teamId }) {
+  const [marks, setMarks] = useState(null);
+
+  useEffect(() => {
+    const fetchMarks = async () => {
+      try {
+        const res = await axios.get(`guide/teams/${teamId}/marks`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        console.log("Fetched marks:", res.data);
+        setMarks(res.data);
+      } catch (error) {
+        console.error("Error fetching marks:", error);
+      }
+    };
+
+    fetchMarks();
+  }, [teamId]);
+
+  function handleUpdate(){
+    console.log("Handle update");
+  }
+
+  return (
+    // <div className="bg-white p-4 shadow-md rounded-md mt-4">
+    //   <h3 className="text-lg font-semibold text-blue-600 mb-2">Team Marks</h3>
+    //   {marks ? (
+    //     <div>
+    //       <p>LA1: {marks.LA1_marks}</p>
+    //       <p>LA2: {marks.LA2_marks}</p>
+    //       <p>ESE: {marks.ESE_marks}</p>
+    //     </div>
+    //   ) : (
+    //     <p className="text-gray-600">Loading marks...</p>
+    //   )}
+    // </div>
+
+    <div className="bg-white p-4 shadow-md rounded-md mt-4">
+      <h3 className="text-lg font-semibold text-blue-600 mb-2">Team Marks</h3>
+      {marks ? (
+        <div>
+          <p>LA1: {marks.LA1_marks}</p>
+          <p>LA2: {marks.LA2_marks}</p>
+          <p>ESE: {marks.ESE_marks}</p>
+          <button
+            onClick={handleUpdate}
+            className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+          >
+            Update
+          </button>
+        </div>
+      ) : (
+        <p className="text-gray-600">Loading marks...</p>
+      )}
+    </div>
+  );
+}
+
 
 export default function TeamInfo() {
   const location = useLocation();
@@ -14,7 +75,7 @@ export default function TeamInfo() {
     const fetchIdeas = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:3000/guide/team/ideas",
+          "guide/team/ideas",
           { teamId: team.id },
           {
             headers: {
@@ -38,7 +99,7 @@ export default function TeamInfo() {
 
     try {
       await axios.put(
-        `http://localhost:3000/guide/teams/${team.id}/idea/${id}/status`,
+        `guide/teams/${team.id}/idea/${id}/status`,
         {
           projectId: id,
           comment: comment,
@@ -137,6 +198,9 @@ export default function TeamInfo() {
           ))
         )}
       </div>
+
+      <TeamMarks teamId={team.id} />
+
     </div>
   );
 }
