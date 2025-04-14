@@ -6,6 +6,7 @@ const guideAuthRoutes = require("./routes/guideAuthRoutes");
 const studentRoutes = require ("./routes/studentRoutes")
 const { authenticateToken } = require("./middleware/authMiddleware");
 const guideRouter = require("./routes/guideRoutes");
+const coordinatorRouter = require("./routes/coordinatorRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/student", studentRoutes);
 // });
 
 app.use("/guide" ,guideRouter);
+app.use("/coordinator" , coordinatorRouter);
 
 app.get("/", (req, res)=>{
     res.send("Hello world");

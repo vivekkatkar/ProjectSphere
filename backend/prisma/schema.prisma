@@ -23,11 +23,9 @@ model guide {
   id       Int      @id @default(autoincrement())
   name     String
   password String
-  year     Int
   phone    String
   role     String
   email    String   @unique(map: "Guide_email_key")
-  semester Int
 
   teams    team[]
   batches  batch[]
@@ -90,7 +88,6 @@ model student {
 model team {
   id       Int    @default(autoincrement())
   semester Int
-  year     Int
   name     String
   guideId  Int?
   guide    guide?    @relation(fields: [guideId], references: [id])

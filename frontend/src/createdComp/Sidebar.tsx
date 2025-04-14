@@ -22,6 +22,9 @@ export default function Sidebar() {
           <li className="p-3 rounded-md text-gray-700 hover:bg-blue-100">
             <Link to="/student-dashboard/all-projects">All Projects</Link>
           </li>
+          <li className="p-3 rounded-md text-gray-700 hover:bg-blue-100">
+            <Link to="/student-dashboard/evaluation">Evaluation</Link>
+          </li>
         </ul>
       </div>
       <button onClick={()=>{

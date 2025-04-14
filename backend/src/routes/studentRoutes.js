@@ -1,5 +1,5 @@
 const express = require("express");
-const { signup, login, profile, createTeam, getAll, addIdea, getAllIdeas, displayAllReports, addReport } = require ('../controllers/studentControllers');
+const { signup, login, profile, createTeam, getAll, addIdea, getAllIdeas, displayAllReports, addReport, getTeamMarks } = require ('../controllers/studentControllers');
 const { authenticateToken } = require("../middleware/authMiddleware");
 const {getTeamDetails} = require ("../controllers/studentControllers");
 const prisma = require("../config/prisma");
@@ -26,5 +26,8 @@ router.post('/upload', authenticateToken, upload.single("file"), addReport);
 router.get ('post', authenticateToken);
 
 // router.get ("/notification", authenticateToken, getNotifications);
+
+// Get LA marks
+router.get("/marks", authenticateToken, getTeamMarks);   
 
 module.exports = router;

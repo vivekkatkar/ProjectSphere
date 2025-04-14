@@ -17,11 +17,10 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 exports.signup = async (req, res) => {
   
-  let { name, email, password, role, phone, semester } = req.body;
-  semester = parseInt(semester);
+  let { name, email, password, role, phone} = req.body;
 
   try {
-    console.log(name, email, password, role, phone, semester);
+    console.log(name, email, password, role, phone);
     const existingUser = await prisma.guide.findFirst({ where: { email } });
     console.log(existingUser);
     if (existingUser)
@@ -30,7 +29,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
     await prisma.guide.create({
-      data: { name, email, password: hashedPassword, role, phone, semester },
+      data: { name, email, password: hashedPassword, role, phone},
     });
 
     const token = jwt.sign({ role: role, email: email }, SECRET_KEY);
@@ -73,3 +72,4 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "fail", error: error.message });
   }
 };
+

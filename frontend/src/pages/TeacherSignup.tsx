@@ -13,7 +13,6 @@ export default function TeacherSignup() {
     email: "",
     role : "",
     password : "",
-    semester : "",
     phone : "",
     confirmPassword : "",
   });
@@ -59,7 +58,6 @@ export default function TeacherSignup() {
       const response = await axios.post("guide-auth/signup", {
         name: form.name,
         email: form.email,
-        semester: form.semester,
         role: form.role,
         phone: form.phone,
         password: form.password,
@@ -142,19 +140,6 @@ export default function TeacherSignup() {
                 name="phone"
                 placeholder="Your Phone"
                 value={form.phone}
-                onChange={handleChange}
-                required
-                className="w-full border-none focus:ring-0"
-              />
-            </div>
-
-            <div className="flex items-center border rounded px-3 py-2">
-              <FaEnvelope className="text-gray-400 mr-2" />
-              <Input
-                type="text"
-                name="semester"
-                placeholder="Your Semester"
-                value={form.semester}
                 onChange={handleChange}
                 required
                 className="w-full border-none focus:ring-0"
