@@ -262,6 +262,8 @@ router.put("/teams/:teamId/idea/:id/status", authenticateToken, async (req, res)
 });
 
 
+
+
 // router.post("/teams/:id/notify", authenticateToken, guideController.notifyTeam);
 
 // LA result update

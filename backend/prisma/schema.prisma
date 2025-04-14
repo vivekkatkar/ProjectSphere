@@ -33,15 +33,14 @@ model guide {
 }
 
 model project {
-  id               Int    @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   teamId           Int?
-  topic            String    
+  topic            String   @default("")
   synopsis         Bytes
-  synopsisApproval Int    @default(0)
-  githubLink       String
-
+  synopsisApproval Int      @default(0) 
+  comments       String?
+  githubLink       String   @default("")
   team             team?  @relation(fields: [teamId], references: [id])
-
   @@index([teamId], map: "Project_teamId_fkey")
 }
 
@@ -51,7 +50,6 @@ model Idea {
   topic    String
   comment  String
   approved Int // 0 -> pending, 1 -> approved, 2 -> rejected
-
   team     team  @relation(fields: [teamId], references: [id])
 }
 
@@ -59,10 +57,10 @@ model report {
   id        Int      @id @default(autoincrement())
   teamId    Int?
   file      Bytes
-  
+  status    Int      @default(0) // 0 -> pending, 1 ->submitted
+  week      Int
   createdAt DateTime @default(now())
   team      team?    @relation(fields: [teamId], references: [id])
-
   @@index([teamId], map: "Report_teamId_fkey")
 }
 

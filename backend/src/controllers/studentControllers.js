@@ -2,6 +2,8 @@ const prisma = require("../config/prisma");
 require("dotenv").config();
 const express = require ("express")
 const router = express.Router();
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
 // router.get("/profile", );
 // router.get("/idea", );
@@ -208,32 +210,21 @@ exports.getAllIdeas = async (req, res) => {
     }
   }
 
-
-//   router.get('/reports', authenticateToken, displayAllReports);
-
-// model report {
-// 	id        Int      @id @default(autoincrement())
-// 	teamId    Int?
-// 	file      Bytes
-// 	createdAt DateTime @default(now())
-  
-// 	team      team?    @relation(fields: [teamId], references: [id])
-  
-// 	@@index([teamId], map: "Report_teamId_fkey")
-//   }
-
 exports.displayAllReports = async (req, res) => {
 	try {
-		const teamId = parseInt(req.user.teamId);
+		const teamId = parseInt(req.params.id);
 		const reports = await prisma.report.findMany({
 			where: { teamId },
 		});
-
+		console.log (reports);
 		const formatted = reports.map((report, idx) => ({
 			id: report.id,
-			week: idx + 1,
-			downloadUrl: `/student/report/${report.id}/download`,
+			week: report.week,
+			status : report.status,
+			downloadUrl: `/student/report/${report.id}/view`,
+			file : report.file,
 		  }));
+		
 
 		res.status(200).json({
 			status: "success",
@@ -253,22 +244,24 @@ exports.displayAllReports = async (req, res) => {
 
 exports.addReport = async (req, res) => {
 	try {
-		const teamId = parseInt(req.user.teamId);
-		const fileBuffer = req.file.buffer;
-	
-		const report = await prisma.report.create({
-		  data: {
-			teamId,
-			file: fileBuffer, 
-			
-		  }
-		});
-	
-		res.status(200).json({ message: "Report uploaded", report });
-	  } catch (error) {
-		console.error(error);
-		res.status(500).json({ error: "Failed to upload report" });
-	  }
-}
+	  const teamId = parseInt(req.body.teamId);
+	  const fileBuffer = req.file.buffer; // comes from multer
+
+	  const report = await prisma.report.create({
+		data: {
+		  teamId,
+		  file: fileBuffer,
+		  status: 1,
+		  week: parseInt(req.body.week),
+		},
+	  });
+
+	  res.status(200).json({ message: "Report uploaded", report });
+	} catch (error) {
+	  console.error(error);
+	  res.status(500).json({ error: "Failed to upload report", data: req.body });
+	}
+};
+
 
 

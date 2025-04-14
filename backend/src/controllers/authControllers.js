@@ -47,7 +47,7 @@ exports.signup = async (req, res) => {
 //   }
 
 exports.login = async (req, res) => {
-  const { email, password, semester } = req.body;
+  let { email, password, semester } = req.body;
   semester = parseInt(semester);
   try {
     const user = await prisma.student.findUnique({ where: { email } });

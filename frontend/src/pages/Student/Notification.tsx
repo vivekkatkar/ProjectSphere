@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Notification() {
-  const [notifications, setNotifications] = useState([]);
+  interface Notification {
+    id: number;
+    fromName: string;
+    message: string;
+    createdAt: string;
+    isRead: boolean;
+  }
+  
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   let teamId = parseInt(localStorage.getItem("teamId")  || "0"); 
   
   useEffect(() => {
@@ -30,7 +38,7 @@ export default function Notification() {
     fetchNotification();
   }, []);
 
-  const handleMarkAsRead = async (id) => {
+  const handleMarkAsRead = async (id : any) => {
     try {
       await axios.patch(
         `http://localhost:3000/guide/notifications/${id}/read`,

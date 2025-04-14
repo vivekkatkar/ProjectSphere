@@ -68,7 +68,7 @@ export default function StudentSignup() {
       }
   
       localStorage.setItem("token", data.token);
-      dispatch(setUser({ name: form.name, year : form.year, email : form.year }));
+     
       navigate("/student-dashboard");
     } catch (error) {
       console.error("Signup error:", error);

@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateTeam from "../../createdComp/CreateTeam";
 import { get } from "http";
+import { useDispatch } from "react-redux";
+import { setUser, clearUser } from "../../store/userSlice";
+
 
 const Profile = () => {
     // function to request backend and get info
@@ -18,7 +21,9 @@ const Profile = () => {
         "Batch" : 0,
         "Guide" : 0,
         "Semester" : 1,
-        "teamId" : 0
+        "teamId" : 0,
+        "year" : 0,
+        "phone" : "",
     })
 
     const [students, setStudents] = useState([{
@@ -42,6 +47,7 @@ const Profile = () => {
         "Description" : "xyz",
         "Github" : "xyz.com"
     }])
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     async function getDetails() {
@@ -67,11 +73,36 @@ const Profile = () => {
                         Batch: data.data.batch || 0,
                         Guide: data.data.guide?.name || 0,
                         Semester: data.data.semester,   
-                        teamId: data.data.teamId || 0
+                        teamId: data.data.teamId || 0,
+                        year : data.data.year || 0,
+                        phone : data.data.phone || "",
                     };
                     return updatedStudent;
                 });
+                // const initialState = {
+                //     batchId : null,
+                //     name: '',
+                //     email: '',
+                //     year : 0,
+                //     phone : "",
+                //     prn : "",
+                //     semester : 0,
+                //     teamId : null,
+                //     isLoggedIn: false,
+                //   };
+                // dispatch(clearUser());
+                dispatch(setUser({
+                name: data.data.name,
+                email: data.data.email,
+                year: data.data.year || 0,
+                prn: data.data.prn,
+                semester: data.data.semester,
+                batchId: data.data.batch || 0,
+                phone: data.data.phone || "",
+                teamId: data.data.teamId || null,
+                }));
             })
+
             .catch(error => console.error("Error fetching details:", error));           
         } catch (error) {
             console.error("Error fetching details:", error);
