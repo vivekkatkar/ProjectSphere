@@ -1,6 +1,194 @@
 import axios from "../../api/uploader.js";
 import { useState, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
+
+
+const SynopsisDisplay = ({ teamId }) => {
+  const [synopsis, setSynopsis] = useState({
+    file: null,
+    status: 0, // 0 -> pending, 1 -> approved, 2 -> rejected
+    comments: "",
+  });
+  const [loading, setLoading] = useState(true);
+  const [updateMode, setUpdateMode] = useState(false);
+  const [updateFile, setUpdateFile] = useState(null);
+  const [updating, setUpdating] = useState(false);
+
+  const fetchSynopsis = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`student/synopsis/${teamId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const details = res.data.details;
+
+      if (!details?.file) {
+        setSynopsis({
+          file: null,
+          status: 0,
+          comments: "",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const byteArray = Uint8Array.from(atob(details.file), (c) =>
+        c.charCodeAt(0)
+      );
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(blob);
+
+      setSynopsis({
+        file: fileURL,
+        status: details.synopsisApproval,
+        comments: details.comments || "",
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch synopsis:", error);
+      setLoading(false);
+    }
+  }, [teamId]);
+
+  useEffect(() => {
+    fetchSynopsis();
+  }, [fetchSynopsis]);
+
+  const handleUpdateSubmit = async () => {
+    if (!updateFile) {
+      alert("Please select a file to update.");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", updateFile);
+      formData.append("teamId", teamId);
+      // Append topic if needed. Replace with actual topic if available.
+      formData.append("topic", "");
+      setUpdating(true);
+
+      // Using same endpoint from your format.
+      const res = await axios.post("student/synopsisUpload", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert("Synopsis updated successfully!");
+      setUpdateMode(false);
+      setUpdateFile(null);
+      // Refresh the displayed synopsis.
+      fetchSynopsis();
+    } catch (error) {
+      console.error("Error updating synopsis:", error);
+      alert("Failed to update synopsis.");
+    }
+    setUpdating(false);
+  };
+
+  if (loading) {
+    return <div>Loading synopsis...</div>;
+  }
+
+  return (
+    <div className="synopsis-display">
+      <table className="table-auto w-full border-collapse border border-gray-300">
+        <thead>
+          <tr>
+            <th className="border border-gray-300 p-2">File</th>
+            <th className="border border-gray-300 p-2">Status</th>
+            <th className="border border-gray-300 p-2">Comments</th>
+            <th className="border border-gray-300 p-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {synopsis.file ? (
+            <tr>
+              <td className="border border-gray-300 p-2">
+                <a
+                  href={synopsis.file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline"
+                >
+                  View File
+                </a>
+              </td>
+              <td className="border border-gray-300 p-2">
+                {synopsis.status === 1
+                  ? "Approved"
+                  : synopsis.status === 2
+                  ? "Rejected"
+                  : "Approval Pending"}
+              </td>
+              <td className="border border-gray-300 p-2">
+                {synopsis.comments
+                  ? synopsis.comments
+                  : "No remarks provided"}
+              </td>
+              <td className="border border-gray-300 p-2">
+                <a
+                  href={synopsis.file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline mr-2"
+                >
+                  View Synopsis
+                </a>
+                <button
+                  onClick={() => setUpdateMode((prev) => !prev)}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  {updateMode ? "Cancel" : "Update Synopsis"}
+                </button>
+              </td>
+            </tr>
+          ) : (
+            <tr>
+              <td colSpan="4" className="border border-gray-300 p-2 text-center">
+                No synopsis uploaded yet.
+              </td>
+            </tr>
+          )}
+          {updateMode && (
+            <tr>
+              <td colSpan="4" className="border border-gray-300 p-2">
+                <div className="flex flex-col items-start">
+                  <label className="mb-2 font-medium">
+                    Select new synopsis file
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) =>
+                      setUpdateFile(e.target.files ? e.target.files[0] : null)
+                    }
+                    className="mb-2"
+                  />
+                  <button
+                    onClick={handleUpdateSubmit}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    disabled={updating}
+                  >
+                    {updating ? "Updating..." : "Submit Updated Synopsis"}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 
 const Idea = () => {
     
@@ -43,6 +231,8 @@ const Idea = () => {
     const pendingIdeas = ideas.filter(idea => idea.approved === 0);
     const rejectedIdeas = ideas.filter(idea => idea.approved === 2);
     
+
+
     async function getDetails() {
         try {
             const token = localStorage.getItem("token");
@@ -172,7 +362,7 @@ const Idea = () => {
           console.log ("Form data:", formData);
 
           const response = await axios.post(
-            "http://localhost:3000/student/synopsisUpload",
+            "student/synopsisUpload",
             formData,
             {
               headers: {
@@ -200,7 +390,7 @@ const Idea = () => {
       const getSynopsis = async () => {
         try {
           const res = await axios.get(
-            `http://localhost:3000/student/synopsis/${teamId}`,
+            `student/synopsis/${teamId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -238,9 +428,6 @@ const Idea = () => {
         }
       };
       
-
-      
-
     const handleSubmit = async () => {
         try {
           const res = await axios.post(
@@ -418,6 +605,10 @@ const Idea = () => {
         </div>
         )
     }
+       </div>
+
+       <div>
+        <SynopsisDisplay teamId={teamId} />
        </div>
        </>
     );

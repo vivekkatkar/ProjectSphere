@@ -56,7 +56,7 @@ model report {
   id        Int      @id @default(autoincrement())
   teamId    Int?
   file      Bytes
-  status    Int      @default(0) // 0 -> pending, 1 ->submitted
+  status    Int      @default(0) // 0 -> pending, 1 ->submitted -> 2 rejected , 3 aproved 
   week      Int
   createdAt DateTime @default(now())
   team      team?    @relation(fields: [teamId], references: [id])

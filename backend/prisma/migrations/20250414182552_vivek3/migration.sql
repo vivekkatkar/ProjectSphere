@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `project` ADD COLUMN `comments` VARCHAR(191) NULL,
+    MODIFY `topic` VARCHAR(191) NOT NULL DEFAULT '',
+    MODIFY `githubLink` VARCHAR(191) NOT NULL DEFAULT '';

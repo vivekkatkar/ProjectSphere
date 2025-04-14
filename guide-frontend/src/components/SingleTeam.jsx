@@ -1,5 +1,5 @@
 import axios from "../../api/uploader.js";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 function TeamMarks({ teamId }) {
@@ -62,6 +62,261 @@ function TeamMarks({ teamId }) {
   );
 }
 
+function TeamSynposis({ teamId }) {
+  const [synopsis, setSynopsis] = useState({
+    file: null,
+    status: 0, // 0 -> pending, 1 -> approved, 2 -> rejected
+    comments: "",
+  });
+  const [loading, setLoading] = useState(true);
+  
+  const [reviewStatus, setReviewStatus] = useState(0);
+  const [reviewComments, setReviewComments] = useState("");
+
+  const fetchSynopsis = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`student/synopsis/${teamId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const details = res.data.details;
+      if (!details?.file) {
+        setSynopsis({
+          file: null,
+          status: 0,
+          comments: "",
+        });
+        setLoading(false);
+        return;
+      }
+      
+      const byteArray = Uint8Array.from(atob(details.file), (c) =>
+        c.charCodeAt(0)
+      );
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(blob);
+      setSynopsis({
+        file: fileURL,
+        status: details.synopsisApproval,
+        comments: details.comments || "",
+      });
+      
+      setReviewStatus(details.synopsisApproval || 0);
+      setReviewComments(details.comments || "");
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch synopsis:", error);
+      setLoading(false);
+    }
+  }, [teamId]);
+
+  useEffect(() => {
+    fetchSynopsis();
+  }, [fetchSynopsis]);
+
+  const handleReviewSubmit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      const payload = {
+        teamId: teamId,
+        status: reviewStatus, // 0: pending, 1: approved, 2: rejected
+        comments: reviewComments,
+      };
+
+      const res = await axios.post("student/updateSynopsisReview", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Synopsis review updated successfully!");
+      // Refresh the synopsis display.
+      fetchSynopsis();
+    } catch (error) {
+      console.error("Error updating synopsis review:", error);
+      alert("Failed to update synopsis review.");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading synopsis...</div>;
+  }
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-semibold mb-4">Team Synopsis Review</h2>
+      {synopsis.file ? (
+        <div>
+          <p>
+            <strong>File:</strong>{" "}
+            <a
+              href={synopsis.file}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline"
+            >
+              View Synopsis
+            </a>
+          </p>
+          <p>
+            <strong>Current Status:</strong>{" "}
+            {synopsis.status === 1
+              ? "Approved"
+              : synopsis.status === 2
+              ? "Rejected"
+              : "Pending Approval"}
+          </p>
+          <p>
+            <strong>Current Comments:</strong>{" "}
+            {synopsis.comments || "No comments yet"}
+          </p>
+          <hr className="my-4" />
+          <div className="mb-4">
+            <label className="block mb-2 font-medium">
+              Update Review Status:
+            </label>
+            <select
+              value={reviewStatus}
+              onChange={(e) => setReviewStatus(parseInt(e.target.value))}
+              className="border p-2 rounded w-full"
+            >
+              <option value={0}>Pending Approval</option>
+              <option value={1}>Approved</option>
+              <option value={2}>Rejected</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block mb-2 font-medium">Add/Edit Comments:</label>
+            <textarea
+              value={reviewComments}
+              onChange={(e) => setReviewComments(e.target.value)}
+              placeholder="Enter your comments"
+              className="w-full border p-2 rounded"
+            ></textarea>
+          </div>
+          <button
+            onClick={handleReviewSubmit}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Submit Review
+          </button>
+        </div>
+      ) : (
+        <div>No synopsis uploaded yet for team {teamId}.</div>
+      )}
+    </div>
+  );
+}
+
+function TeamReports({ teamId }) {
+  const [reports, setReports] = useState([]);
+
+  useEffect(() => {
+    if (teamId) {
+      getReportsDetails();
+    }
+  }, [teamId]);
+
+  async function getReportsDetails() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`student/reports/${teamId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = response.data;
+
+      if (response.status === 200 && data.reports) {
+        const submittedReports = data.reports;
+
+        const allWeeks = Array.from({ length: 10 }, (_, i) => {
+          const weekNum = i + 1;
+          const existing = submittedReports.find((r) => r.week === weekNum);
+          return {
+            week: weekNum,
+            status: !!existing,
+            reportId: existing?.id || null,
+            file: existing?.file || null,
+          };
+        });
+
+        setReports(allWeeks);
+      }
+    } catch (err) {
+      console.error("Failed to fetch reports:", err);
+    }
+  }
+
+  async function handleDownload(reportId) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`http://localhost:3000/student/report/${reportId}/download`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Week-${reportId}-report.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        alert("Failed to download the report");
+      }
+    } catch (err) {
+      console.error("Error downloading the report:", err);
+    }
+  }
+
+  return (
+    <div className="flex">
+    <div className="bg-white shadow-md p-6 rounded-lg ">
+      <h2 className="text-xl font-semibold text-blue-700 mb-4">Weekly Reports</h2>
+      {reports.length > 0 ? (
+        <ul className="space-y-4">
+          {reports.map((report) =>
+            report.status ? (
+              <li key={report.week} className="p-4 border rounded-lg">
+                <h3 className="text-lg font-semibold text-blue-600">
+                  Week {report.week}
+                </h3>
+                <button
+                  onClick={() => handleDownload(report.reportId)}
+                  className="text-blue-500 underline mt-1"
+                >
+                  Download Report
+                </button>
+                <iframe
+                  src={`http://localhost:3000/student/report/${report.reportId}/view`}
+                  width="100%"
+                  height="500px"
+                  title={`Report Week ${report.week}`}
+                  className="mt-3 border"
+                />
+              </li>
+            ) : null
+          )}
+        </ul>
+      ) : (
+        <p>No reports available yet.</p>
+      )}
+    </div>
+    </div>
+  );
+}
 
 export default function TeamInfo() {
   const location = useLocation();
@@ -83,6 +338,7 @@ export default function TeamInfo() {
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
             },
           }
         );
@@ -204,6 +460,8 @@ export default function TeamInfo() {
 
       <TeamMarks teamId={team.id} />
 
+      <TeamReports teamId={team.id} />
+      <TeamSynposis teamId={team.id} /> 
     </div>
   );
 }
