@@ -25,10 +25,59 @@ exports.profile = async (req, res) => {
   }
 };
 
-exports.getAllTeams = async (req, res) => {
-  // student data -> name and prn
+// exports.getAllTeams = async (req, res) => {
+//   // student data -> name and prn
 
+//   try {
+//     const getTeamDetails = async (teamId) => {
+//       const students = await prisma.student.findMany({
+//         where: {
+//           teamId: teamId,
+//         },
+//         select: {
+//           teamId: true,
+//           name: true,
+//           prn: true,
+//         },
+//       });
+
+//       return students;
+//     };
+
+//     const teams = await prisma.team.findMany({
+//       where: {
+//         guideId: req.user.id,
+//       },
+//     });
+
+//     if (teams.length === 0) {
+//       return res.status(200).json({
+//         status: "Success",
+//         message: "No teams are assigned to the guide",
+//       });
+//     }
+
+//     const teamDetails = await Promise.all(
+//       teams.map((team) => getTeamDetails(team.id))
+//     );
+
+//     return res
+//       .status(200)
+//       .json({ status: "Success", data: teams, teamDetails: teamDetails });
+//   } catch (e) {
+//     console.log(e);
+//     return res.status(500).json({
+//       status: "failed",
+//       error: e.message,
+//     });
+//   }
+// };
+
+
+exports.getAllTeams = async (req, res) => {
   try {
+    const yearFilter = req.query.year ? parseInt(req.query.year) : null;
+    
     const getTeamDetails = async (teamId) => {
       const students = await prisma.student.findMany({
         where: {
@@ -40,13 +89,13 @@ exports.getAllTeams = async (req, res) => {
           prn: true,
         },
       });
-
       return students;
     };
 
     const teams = await prisma.team.findMany({
       where: {
         guideId: req.user.id,
+        ...(yearFilter && { year: yearFilter }),
       },
     });
 

@@ -6,6 +6,7 @@ const prisma = require("../config/prisma");
 
 
 const router = express.Router();
+router.use(express.json())
 
 // Profile
 router.get("/profile", authenticateToken, guideController.profile);
@@ -175,6 +176,7 @@ router.patch("/notifications/:id/read", authenticateToken, async (req, res) => {
 });
 
 router.post("/team/ideas", authenticateToken, async (req, res) => {
+  console.log("printing body");
   console.log(req.body);
   const { teamId } = req.body;
 

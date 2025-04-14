@@ -67,6 +67,8 @@ router.post ('/synopsisUpload', authenticateToken, upload.single("file"), async 
     } 
 });
 
+
+
 router.get("/synopsis/:id", authenticateToken, async (req, res) => {
   const teamId = parseInt(req.params.id);
   try {
@@ -98,6 +100,39 @@ router.get("/synopsis/:id", authenticateToken, async (req, res) => {
   }
 });
 
+
+
+router.post("/updateSynopsisReview", authenticateToken, async (req, res) => {
+    try {
+      const { teamId, status, comments } = req.body;
+
+      const project = await prisma.project.findFirst({
+        where: { teamId: parseInt(teamId) },
+      });
+
+      if (!project) {
+        return res.status(404).json({ message: "Synopsis not found for this team" });
+      }
+
+      // Update the synopsis review fields.
+      const updatedProject = await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          synopsisApproval: status,
+          comments: comments || "",
+        },
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Synopsis review updated successfully", project: updatedProject });
+    } catch (error) {
+      console.error("Error updating synopsis review:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
 // router.get ("/team/:id", authenticateToken, getTeamDetails);
 
 // Removed invalid route definition
@@ -125,7 +160,6 @@ router.get("/report/:id/view", async (req, res) => {
       res.status(500).send("Internal Server Error");
     }
   });
-  
   
 
   router.get("/report/:id/download", async (req, res) => {
