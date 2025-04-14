@@ -4,8 +4,8 @@ import CreateTeam from "../../createdComp/CreateTeam";
 import { get } from "http";
 import { useDispatch } from "react-redux";
 import { setUser, clearUser } from "../../store/userSlice";
-// import axios from "../../api/uploader.js"
-import axios from "axios";
+import axios from "../../api/uploader.js"
+// import axios from "axios";
 
 const Profile = () => {
     // function to request backend and get info

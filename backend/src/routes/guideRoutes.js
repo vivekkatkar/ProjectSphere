@@ -175,6 +175,7 @@ router.patch("/notifications/:id/read", authenticateToken, async (req, res) => {
 });
 
 router.post("/team/ideas", authenticateToken, async (req, res) => {
+  console.log(req.body);
   const { teamId } = req.body;
 
   try {
@@ -183,6 +184,8 @@ router.post("/team/ideas", authenticateToken, async (req, res) => {
         teamId: teamId,
       },
     });
+    console.log(teamId);
+    console.log(ideas);
 
     res.status(200).json({ ideas });
   } catch (error) {

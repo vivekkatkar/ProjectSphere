@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import axios from "../../api/uploader.js";
 export default function WeeklyReports() {
   const [reports, setReports] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -19,21 +19,47 @@ export default function WeeklyReports() {
   async function getReportsDetails() {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/student/reports/${teamId}`, {
+      // const response = await fetch(`student/reports/${teamId}`, {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+
+      // const data = await response.json();
+
+      // if (response.ok && data.reports) {
+      //   const submittedReports = data.reports;
+
+      //   const allWeeks = Array.from({ length: 10 }, (_, i) => {
+      //     const weekNum = i + 1;
+      //     const existing = submittedReports.find((r: any) => r.week === weekNum);
+      //     return {
+      //       week: weekNum,
+      //       status: !!existing,
+      //       reportId: existing?.id || null,
+      //       file: existing?.file || null,
+      //     };
+      //   });
+
+      //   setReports(allWeeks);
+      // }
+
+      const response = await axios.get(`student/reports/${teamId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      const data = await response.json();
-
-      if (response.ok && data.reports) {
+    
+      const data = response.data;
+    
+      if (response.status === 200 && data.reports) {
         const submittedReports = data.reports;
-
+    
         const allWeeks = Array.from({ length: 10 }, (_, i) => {
           const weekNum = i + 1;
-          const existing = submittedReports.find((r: any) => r.week === weekNum);
+          const existing = submittedReports.find((r) => r.week === weekNum);
           return {
             week: weekNum,
             status: !!existing,
@@ -41,10 +67,10 @@ export default function WeeklyReports() {
             file: existing?.file || null,
           };
         });
-
+    
         setReports(allWeeks);
-      }
-    } catch (err) {
+    }
+  } catch (err) {
       console.error("Failed to fetch reports:", err);
     }
   }

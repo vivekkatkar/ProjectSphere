@@ -70,10 +70,13 @@ export default function TeamInfo() {
 
   const [ideas, setIdeas] = useState([]);
 
+  console.log(team);
+
   // Fetch ideas on load
   useEffect(() => {
     const fetchIdeas = async () => {
       try {
+        console.log("Here team id : ", team.id);
         const res = await axios.post(
           "guide/team/ideas",
           { teamId: team.id },

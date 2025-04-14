@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../api/uploader.js";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 

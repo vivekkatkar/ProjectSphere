@@ -6,7 +6,7 @@ import { Input } from "../../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "../../store/userSlice";
 import { useDispatch } from "react-redux";
-import axios from "axios";
+import axios from "../../api/uploader.js";
 
 export default function StudentSignup() {
   const dispatch = useDispatch();

@@ -10,11 +10,13 @@ exports.signup = async (req, res) => {
   console.log(name, email, password, prn, semester, year, phone);
   semester = parseInt(semester);
 
+  
   try {
     console.log(name, email, password, prn, semester, year, phone);
     const existingUser = await prisma.student.findFirst({ where: { email } });
     const existingUser1 = await prisma.student.findFirst({ where: { prn } });
     console.log(existingUser);
+    console.log(existingUser1);
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
     if (existingUser1){

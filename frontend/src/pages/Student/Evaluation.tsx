@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../api/uploader.js";
 import { useEffect, useState } from "react";
 
 function TeamMarks() {
@@ -7,7 +7,7 @@ function TeamMarks() {
   useEffect(() => {
     const fetchMarks = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/student/marks", {
+        const res = await axios.get("student/marks", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
