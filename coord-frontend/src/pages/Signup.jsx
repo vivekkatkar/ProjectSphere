@@ -1,0 +1,163 @@
+import { useState } from "react";
+import { FaUser, FaEnvelope, FaLock} from "react-icons/fa";
+import { Card } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../api/uploader.js"
+
+export default function Signup() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    role : "Coordinator",
+    password : "",
+    phone : "",
+    confirmPassword : "",
+  });
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    
+    if (form.password !== form.confirmPassword) {
+      alert("Password and confirm password don't match");
+      return;
+    }
+
+    try {
+      const response = await axios.post("guide-auth/signup", {
+        name: form.name,
+        email: form.email,
+        role: form.role,
+        phone: form.phone,
+        password: form.password,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+    
+      const data = response.data;
+      console.log(data);
+    
+      const token = data.token;
+      console.log(token);
+      localStorage.setItem("token", token);
+    
+      // window.open(`http://localhost:9563/?token=${token}`);
+      navigate("/dashboard");
+      
+    } catch (error) {
+      console.error("Signup failed:", error.response?.data || error.message);
+    }
+    
+
+  }
+
+  function handleChange (e){
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name] : value,
+    }));
+  };  
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-blue-200">
+      <Card className="w-full max-w-4xl p-6 flex shadow-lg bg-white rounded-lg">
+        <div className="w-1/2 p-6">
+          <h2 className="text-2xl font-bold mb-4">Signup as Coordinator</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaUser className="text-gray-400 mr-2" />
+              <Input
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                value={form.name}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <Input
+                type="email"
+                name="email"
+                placeholder="Your Email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <Input
+                type="text"
+                name="phone"
+                placeholder="Your Phone"
+                value={form.phone}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+
+            {/* <div className="flex items-center border rounded px-3 py-2">
+              <FaUser className="text-gray-400 mr-2" />
+              <select 
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              >
+                <option value="">Select role</option>
+                <option value="Guide">Guide</option>
+                <option value="Coordinator">Coordinator</option>
+              </select>
+            </div>   */}
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaLock className="text-gray-400 mr-2" />
+              <Input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>
+            <div className="flex items-center border rounded px-3 py-2">
+              <FaLock className="text-gray-400 mr-2" />
+              <Input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full border-none focus:ring-0"
+              />
+            </div>          
+            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded">
+              Signup
+            </Button>
+          </form>
+          <p className="mt-4 text-center">
+            Already have an account?
+             <Link to="/login?user=coord" className="text-blue-600 hover:underline"> Login</Link>
+          </p>
+        </div>
+        <div className="w-1/2 hidden md:flex justify-center items-center">
+          <img src="https://cdni.iconscout.com/illustration/premium/thumb/project-management-1884978-1597916.png" alt="Illustration" className="max-w-xs" />
+        </div>
+      </Card>
+    </div>
+  );
+}

@@ -68,8 +68,9 @@ router.post ('/synopsisUpload', authenticateToken, upload.single("file"), async 
 });
 
 
-
 router.get("/synopsis/:id", authenticateToken, async (req, res) => {
+  console.log("fetching synopsis");
+  console.log(req.params.id);
   const teamId = parseInt(req.params.id);
   try {
     const report = await prisma.project.findFirst({
