@@ -89,7 +89,7 @@ export default function WeeklyReports() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:3000/student/report/${reportId}/download`, {
+      const response = await fetch(`https://projectsphere-wpv2.onrender.com/student/report/${reportId}/download`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -180,7 +180,7 @@ export default function WeeklyReports() {
                     </button>
                     <div className="border rounded-lg overflow-hidden">
                       <iframe
-                        src={`http://localhost:3000/student/report/${report.reportId}/view`}
+                        src={`https://projectsphere-wpv2.onrender.com/student/report/${report.reportId}/view`}
                         width="100%"
                         height="200px"
                         title={`Report Week ${report.week}`}

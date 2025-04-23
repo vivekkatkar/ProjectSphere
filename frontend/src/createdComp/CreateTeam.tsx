@@ -18,7 +18,7 @@ export default function CreateTeam() {
     async function getAllStudents() {
         console.log ("All student data");
         const token = localStorage.getItem("token");
-        await fetch("http://localhost:3000/student/getAll", {
+        await fetch("https://projectsphere-wpv2.onrender.com/student/getAll", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export default function CreateTeam() {
             return;
         } 
         const token = localStorage.getItem("token");
-        await fetch("http://localhost:3000/student/createTeam", {
+        await fetch("https://projectsphere-wpv2.onrender.com/student/createTeam", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
