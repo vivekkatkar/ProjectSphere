@@ -1,4 +1,4 @@
-import axios from "../../api/uploader.js";
+import axios from "../api/uploader.js";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -27,47 +27,33 @@ function TeamMarks({ teamId }) {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        Marks
-      </h3>
+    <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+      <h3 className="text-2xl font-semibold text-gray-800">Marks</h3>
+
       {marks ? (
-        <div className="space-y-3">
-          <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-            <span className="text-gray-600">LA1</span>
-            <span className="text-gray-800 font-medium">{marks.LA1_marks}</span>
-          </div>
-          <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-            <span className="text-gray-600">LA2</span>
-            <span className="text-gray-800 font-medium">{marks.LA2_marks}</span>
-          </div>
-          <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-            <span className="text-gray-600">ESE</span>
-            <span className="text-gray-800 font-medium">{marks.ESE_marks}</span>
-          </div>
+        <div className="space-y-4">
+          {["LA1", "LA2", "ESE"].map((exam, index) => (
+            <div key={index} className="flex justify-between items-center text-lg text-gray-700">
+              <span>{exam}</span>
+              <span className="font-semibold text-indigo-600">{marks[`${exam}_marks`]}</span>
+            </div>
+          ))}
           <button
             onClick={handleUpdate}
-            className="w-full py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+            className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300"
           >
             Update Marks
           </button>
         </div>
       ) : (
-        <p className="text-gray-500 text-center">Loading...</p>
+        <p className="text-center text-gray-500">Loading...</p>
       )}
     </div>
   );
 }
 
 function TeamSynposis({ teamId }) {
-  const [synopsis, setSynopsis] = useState({
-    file: null,
-    status: 0,
-    comments: "",
-  });
+  const [synopsis, setSynopsis] = useState({ file: null, status: 0, comments: "" });
   const [loading, setLoading] = useState(true);
   const [reviewStatus, setReviewStatus] = useState(0);
   const [reviewComments, setReviewComments] = useState("");
@@ -77,17 +63,11 @@ function TeamSynposis({ teamId }) {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`student/synopsis/${teamId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const details = res.data.details;
       if (!details?.file) {
-        setSynopsis({
-          file: null,
-          status: 0,
-          comments: "",
-        });
+        setSynopsis({ file: null, status: 0, comments: "" });
         setLoading(false);
         return;
       }
@@ -95,12 +75,7 @@ function TeamSynposis({ teamId }) {
       const byteArray = Uint8Array.from(atob(details.file), (c) => c.charCodeAt(0));
       const blob = new Blob([byteArray], { type: "application/pdf" });
       const fileURL = URL.createObjectURL(blob);
-      setSynopsis({
-        file: fileURL,
-        status: details.synopsisApproval,
-        comments: details.comments || "",
-      });
-
+      setSynopsis({ file: fileURL, status: details.synopsisApproval, comments: details.comments || "" });
       setReviewStatus(details.synopsisApproval || 0);
       setReviewComments(details.comments || "");
       setLoading(false);
@@ -117,19 +92,13 @@ function TeamSynposis({ teamId }) {
   const handleReviewSubmit = async () => {
     try {
       const token = localStorage.getItem("token");
-      const payload = {
-        teamId: teamId,
-        status: reviewStatus,
-        comments: reviewComments,
-      };
-
+      const payload = { teamId, status: reviewStatus, comments: reviewComments };
       await axios.post("student/updateSynopsisReview", payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
       alert("Synopsis review updated successfully!");
       fetchSynopsis();
     } catch (error) {
@@ -143,31 +112,27 @@ function TeamSynposis({ teamId }) {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-        Synopsis
-      </h2>
+    <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+      <h2 className="text-2xl font-semibold text-gray-800">Synopsis</h2>
+
       {synopsis.file ? (
         <div className="space-y-4">
           <a
             href={synopsis.file}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-500 hover:underline flex items-center gap-2"
+            className="text-indigo-600 hover:underline flex items-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9l-7-7H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
             View Synopsis
           </a>
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <p className="text-gray-600">
-              Status: {" "}
+          
+          <div className="text-sm text-gray-600">
+            <p>Status: 
               <span
-                className={`px-2 py-1 rounded text-sm ${
+                className={`px-3 py-1 rounded-full text-sm ${
                   synopsis.status === 1
                     ? "bg-green-100 text-green-700"
                     : synopsis.status === 2
@@ -179,33 +144,37 @@ function TeamSynposis({ teamId }) {
               </span>
             </p>
           </div>
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <p className="text-gray-600">Comments: {synopsis.comments || "None"}</p>
+
+          <div className="text-sm text-gray-600">
+            <p>Comments: {synopsis.comments || "None"}</p>
           </div>
+
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Review Status</label>
+            <label className="block text-sm text-gray-600 mb-2">Review Status</label>
             <select
               value={reviewStatus}
               onChange={(e) => setReviewStatus(parseInt(e.target.value))}
-              className="w-full p-2 border border-gray-200 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm"
             >
               <option value={0}>Pending</option>
               <option value={1}>Approved</option>
               <option value={2}>Rejected</option>
             </select>
           </div>
+
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Comments</label>
+            <label className="block text-sm text-gray-600 mb-2">Comments</label>
             <textarea
               value={reviewComments}
               onChange={(e) => setReviewComments(e.target.value)}
               placeholder="Add comments"
-              className="w-full p-2 border border-gray-200 rounded-lg h-24 resize-none"
+              className="w-full p-3 border border-gray-300 rounded-lg h-28 resize-none"
             ></textarea>
           </div>
+
           <button
             onClick={handleReviewSubmit}
-            className="w-full py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+            className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300"
           >
             Submit Review
           </button>
@@ -464,7 +433,7 @@ function TeamIdeas({ teamId, ideas, setIdeas }) {
   );
 }
 
-export default function TeamInfo() {
+export function SingleTeam() {
   const location = useLocation();
   const team = location.state?.team || {};
   const teamDetails = location.state?.teamDetails || [];
@@ -497,10 +466,10 @@ export default function TeamInfo() {
   return (
     <div className="min-h-screen w-full bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-6xl mx-auto py-6 px-4">
+      <div className="bg-white shadow-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto py-6 px-4">
           <h1 className="text-3xl font-semibold text-gray-800 flex items-center gap-2">
-            <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
             {team.name}
@@ -509,14 +478,14 @@ export default function TeamInfo() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto py-8 px-4">
+      <div className="max-w-7xl mx-auto py-8 px-6">
         {/* Navigation Tabs */}
         <div className="mb-6">
-          <nav className="flex flex-wrap gap-2 border-b border-gray-200">
+          <nav className="flex flex-wrap gap-4 border-b border-gray-300 pb-2">
             {["Overview", "Ideas", "Marks", "Synopsis", "Reports"].map((section) => (
               <button
                 key={section}
-                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                className={`px-5 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                   activeSection.toLowerCase() === section.toLowerCase()
                     ? "bg-indigo-500 text-white"
                     : "text-gray-600 hover:bg-gray-100"
@@ -530,7 +499,7 @@ export default function TeamInfo() {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
           {activeSection === "overview" && (
             <div>
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -539,7 +508,7 @@ export default function TeamInfo() {
                 </svg>
                 Overview
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-sm text-gray-600 mb-1 flex items-center gap-2">
                     <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

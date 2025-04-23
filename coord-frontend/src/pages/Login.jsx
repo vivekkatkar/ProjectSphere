@@ -80,7 +80,7 @@ export function Login() {
 
             const token = data.token;
             localStorage.setItem("token", token);
-            window.open(`http://localhost:9563/?token=${token}`);
+            navigate("/dashboard");
             
             } catch (error) {
                 const errorMsg = error.response?.data?.error || "Login failed.";

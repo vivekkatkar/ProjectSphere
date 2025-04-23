@@ -12,7 +12,7 @@ router.use(express.json())
 router.get("/profile", authenticateToken, guideController.profile);
 
 // Teams
-router.get("/teams", authenticateToken, guideController.getAllTeams);             
+router.get("/teams", authenticateToken, guideController.getAllTeams);  
 router.get("/teams/:id", authenticateToken, guideController.getTeam);           
 
 // Idea, Report, Synopsis submission
