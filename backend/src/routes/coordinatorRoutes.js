@@ -28,10 +28,6 @@ router.get("/all-teams", async (req, res)=>{
   }
 });
 
-router.get("/team-details", async(res, res){
-    
-})
-
 router.post("/assign-guide", async (req, res) => {
     try {
       const { teamId, semester, guideId } = req.body;
